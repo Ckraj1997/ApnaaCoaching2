@@ -1,0 +1,26 @@
+PS C:\Users\ckraj\AndroidStudioProjects\ApnaaCoaching2> .\gradlew signingReport
+Calculating task graph as no cached configuration is available for tasks: signingReport
+
+> Task :app:signingReport
+Variant: debug
+Config: debug
+Store: C:\Users\ckraj\.android\debug.keystore
+Alias: AndroidDebugKey
+MD5: B3:BE:FB:45:4A:FB:AE:DD:46:4E:D5:7A:04:4B:D4:F5
+SHA1: 37:EB:18:24:D7:59:71:ED:F9:B8:AA:68:BA:5A:E9:9A:11:B2:EA:B6
+SHA-256: 6E:1A:39:1B:AD:0B:62:F4:B7:2F:F4:6A:4F:13:5F:A7:11:F0:C9:14:D4:06:3D:D6:FF:1D:52:55:28:EB:C1:44
+Valid until: Saturday, 20 March, 2055
+----------
+Variant: release
+Config: null
+Store: null
+Alias: null
+----------
+Variant: debugAndroidTest
+Config: debug
+Store: C:\Users\ckraj\.android\debug.keystore
+Alias: AndroidDebugKey
+MD5: B3:BE:FB:45:4A:FB:AE:DD:46:4E:D5:7A:04:4B:D4:F5
+SHA1: 37:EB:18:24:D7:59:71:ED:F9:B8:AA:68:BA:5A:E9:9A:11:B2:EA:B6
+SHA-256: 6E:1A:39:1B:AD:0B:62:F4:B7:2F:F4:6A:4F:13:5F:A7:11:F0:C9:14:D4:06:3D:D6:FF:1D:52:55:28:EB:C1:44
+Valid until: Saturday, 20 March, 2055

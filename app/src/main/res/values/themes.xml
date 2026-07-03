@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.ApnaaCoaching" parent="android:Theme.Material.Light.NoActionBar" />
+
+    <!--
+        Splash Screen Theme
+        This theme is used by the system to display the splash screen before the app content is ready.
+        Customize the items below to match your branding.
+    -->
+    <style name="Theme.App.Starting" parent="Theme.SplashScreen">
+        <!-- Background color of the splash screen -->
+        <item name="windowSplashScreenBackground">#1A73E8</item>
+
+        <!-- Icon to be displayed in the center of the splash screen. Usually your app logo. -->
+        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher_foreground</item>
+
+        <!-- The theme to use for the Activity after the splash screen is dismissed -->
+        <item name="postSplashScreenTheme">@style/Theme.ApnaaCoaching</item>
+    </style>
+</resources>
