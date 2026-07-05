@@ -1,5 +1,6 @@
 package com.chandan.apnaacoaching.ui.quiz
 
+import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -17,6 +18,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -28,6 +30,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.Timer
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -41,9 +44,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -61,13 +63,13 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 
-// Standard CBT Colors
-val ColorAnswered = Color(0xFF4CAF50)       // Green
-val ColorNotAnswered = Color(0xFFF44336)    // Red
-val ColorNotVisited = Color(0xFFE0E0E0)     // Gray
-val ColorMarked = Color(0xFF9C27B0)         // Purple
+val ColorAnswered = Color(0xFF4CAF50) // Green
+val ColorNotAnswered = Color(0xFFF44336) // Red
+val ColorNotVisited = Color(0xFFE0E0E0) // Gray
+val ColorMarked = Color(0xFF9C27B0) // Purple
 val ColorAnsweredMarked = Color(0xFF2196F3) // Blue
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun QuizScreen(
@@ -75,19 +77,40 @@ fun QuizScreen(
     quizId: Int,
     navController: NavController,
     userId: String,
+    initialLang: String
 ) {
     val context = LocalContext.current // <-- NEW: Needed for the Toast message
     val questions by viewModel.questions.collectAsState()
     val currentIndex by viewModel.currentIndex.collectAsState()
     val answers by viewModel.userAnswers.collectAsState()
 
-    // --- NEW: Observe the live timer ---
     val timeLeft by viewModel.formattedTime.collectAsState()
 
-    // State for Language Toggle (Default: English)
-    var isHindi by remember { mutableStateOf(false) }
+    var isHindi by remember { mutableStateOf(initialLang == "hi") }
 
     val markedQuestions by viewModel.markedQuestions.collectAsState()
+
+    var showSubmitDialog by remember { mutableStateOf(false) }
+
+    val isAutoSubmitted by viewModel.isAutoSubmitted.collectAsState()
+
+    val visitedQuestions by viewModel.visitedQuestions.collectAsState()
+
+    LaunchedEffect(currentIndex) {
+        if (questions.isNotEmpty()) {
+            viewModel.markQuestionAsVisited(questions[currentIndex].id)
+        }
+    }
+
+    LaunchedEffect(isAutoSubmitted) {
+        if (isAutoSubmitted) {
+            Toast.makeText(context, "Time's up! Exam auto-submitted.", Toast.LENGTH_LONG).show()
+
+            navController.navigate("detailed_result_screen/$quizId/$userId") {
+                popUpTo("quiz_screen/$quizId") { inclusive = true }
+            }
+        }
+    }
 
     if (questions.isEmpty()) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -96,36 +119,160 @@ fun QuizScreen(
         return
     }
 
+    if (showSubmitDialog) {
+        val totalQuestions = questions.size
+        var answered = 0
+        var notAnswered = 0
+        var marked = 0
+        var answeredMarked = 0
+        var notVisited = 0
+
+        for (i in 0 until totalQuestions) {
+            val qId = questions[i].id
+            val isAns = answers.containsKey(qId) && answers[qId] != null
+            val isMarked = markedQuestions.contains(qId)
+
+            when {
+                isAns && isMarked -> answeredMarked++
+                !isAns && isMarked -> marked++
+                isAns && !isMarked -> answered++
+                else -> notVisited++ // Adjust this if you track "visited but not answered"
+            }
+        }
+
+        AlertDialog(
+            onDismissRequest = { showSubmitDialog = false },
+            title = { Text("Exam Summary", fontWeight = FontWeight.Bold) },
+            text = {
+                Column {
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text("Total Questions:", fontWeight = FontWeight.Bold)
+                        Text("$totalQuestions")
+                    }
+                    HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text("Answered:", color = ColorAnswered)
+                        Text("$answered")
+                    }
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text("Not Answered:", color = ColorNotAnswered)
+                        Text("$notAnswered") // Update when visited logic is added
+                    }
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text("Marked for Review:", color = ColorMarked)
+                        Text("$marked")
+                    }
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text("Answered & Marked:", color = ColorAnsweredMarked)
+                        Text("$answeredMarked")
+                    }
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text("Not Visited:", color = Color.Gray)
+                        Text("$notVisited")
+                    }
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        "Are you sure you want to submit for final marking? No changes will be allowed after submission.",
+                        color = MaterialTheme.colorScheme.error,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 14.sp
+                    )
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        showSubmitDialog = false
+
+                        viewModel.submitQuiz(userId, quizId) { isSuccess, message ->
+                            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+
+                            if (isSuccess) {
+
+                                navController.navigate("detailed_result_screen/$quizId/$userId") {
+
+                                    popUpTo("quiz_screen/$quizId") { inclusive = true }
+                                }
+                            }
+                        }
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50))
+                ) {
+                    Text("YES")
+                }
+            },
+            dismissButton = {
+                Button(
+                    onClick = { showSubmitDialog = false },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
+                ) {
+                    Text("NO")
+                }
+            }
+        )
+    }
+
     val currentQue = questions[currentIndex]
     val baseUrl = "https://apnaacoaching.in"
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp),
+                color = Color.White,
+                shadowElevation = 2.dp
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+
+                    Row(
+                        modifier = Modifier.weight(1f), // Takes up available space
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
                         Icon(
                             Icons.Default.Timer,
                             contentDescription = "Timer",
                             tint = MaterialTheme.colorScheme.error
                         )
                         Spacer(modifier = Modifier.width(8.dp))
-                        // --- NEW: Replaced hardcoded text with the live StateFlow ---
                         Text(timeLeft, fontWeight = FontWeight.Bold, fontSize = 18.sp)
                     }
-                },
-                actions = {
+
                     TextButton(onClick = { isHindi = !isHindi }) {
                         Icon(Icons.Default.Language, contentDescription = "Language")
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(if (isHindi) "ENG" else "हिं", fontWeight = FontWeight.Bold)
                     }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White)
-            )
+                }
+            }
         },
         bottomBar = {
-            // Action Buttons pinned to the bottom (Matches cbt.php)
+
             Surface(shadowElevation = 8.dp, color = Color.White) {
                 Column {
                     Row(
@@ -170,18 +317,7 @@ fun QuizScreen(
 
                         if (currentIndex == questions.size - 1) {
                             Button(
-                                onClick = {
-                                    // Trigger the API call
-                                    viewModel.submitQuiz(userId, quizId) { isSuccess, message ->
-                                        // Show the result from the PHP script
-                                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-
-                                        if (isSuccess) {
-                                            // Exit the quiz and return to the previous screen
-                                            navController.navigateUp()
-                                        }
-                                    }
-                                },
+                                onClick = { showSubmitDialog = true }, // SHOW DIALOG HERE
                                 colors = ButtonDefaults.buttonColors(containerColor = ColorAnswered)
                             ) {
                                 Text("Submit Final")
@@ -202,18 +338,19 @@ fun QuizScreen(
             }
         }
     ) { paddingValues ->
+
         Column(
             modifier = Modifier
-                .padding(paddingValues)
                 .fillMaxSize()
+                .padding(top = 56.dp)
                 .background(Color(0xFFF8F9FA))
         ) {
-            // --- TOP QUESTION PALETTE (Horizontal Scroll) ---
+
             LazyRow(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(Color.White)
-                    .padding(vertical = 12.dp),
+                    .padding(vertical = 8.dp),
                 contentPadding = PaddingValues(horizontal = 16.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
@@ -223,15 +360,15 @@ fun QuizScreen(
                     val isAns = answers.containsKey(qId) && answers[qId] != null
 
                     val isMarked = markedQuestions.contains(qId)
+                    val isVisited = visitedQuestions.contains(qId)
 
-                    // Basic color logic (can be expanded to include Marked status later)
-// --- NEW: Advanced Palette Color Logic ---
                     val bgColor = when {
                         isAns && isMarked -> ColorAnsweredMarked // Blue
-                        !isAns && isMarked -> ColorMarked        // Purple
-                        isAns -> ColorAnswered                   // Green
-                        isCurrent -> ColorNotAnswered            // Red
-                        else -> ColorNotVisited                  // Gray
+                        !isAns && isMarked -> ColorMarked // Purple
+                        isAns -> ColorAnswered // Green
+                        isCurrent -> ColorNotAnswered
+                        isVisited -> ColorNotAnswered// Red
+                        else -> ColorNotVisited // Gray
                     }
                     val textColor = if (bgColor == ColorNotVisited) Color.Black else Color.White
 
@@ -259,14 +396,13 @@ fun QuizScreen(
             }
             HorizontalDivider()
 
-            // --- QUESTION & OPTIONS AREA ---
             Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())
                     .padding(16.dp)
             ) {
-                // Question Header
+
                 Text(
                     text = "Question ${currentIndex + 1}",
                     color = MaterialTheme.colorScheme.primary,
@@ -275,17 +411,18 @@ fun QuizScreen(
                 )
                 Spacer(modifier = Modifier.height(12.dp))
 
-                // Dynamic Question Text (Hindi / English)
                 val displayQuestion = if (isHindi) currentQue.que_hi else currentQue.que_En
                 Text(
                     text = displayQuestion,
                     style = MaterialTheme.typography.titleLarge,
-                    lineHeight = 28.sp
+                    lineHeight = 28.sp,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentHeight()
                 )
 
-                // Optional Question Image
                 val displayImg = if (isHindi) currentQue.que_img_Hi else currentQue.que_img_En
-                if (!displayImg.isNullOrEmpty() && displayImg != "/config/image/option/") {
+                if (!displayImg.isNullOrEmpty() && displayImg != "/config/image/option/" && displayImg != "/config/image/option/image.hindi") {
                     Spacer(modifier = Modifier.height(16.dp))
                     AsyncImage(
                         model = baseUrl + displayImg,
@@ -299,7 +436,6 @@ fun QuizScreen(
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                // Options List
                 val optionsList = if (isHindi) currentQue.answer_hi else currentQue.answer_en
                 val optionsImgList =
                     if (isHindi) currentQue.answer_img_hi else currentQue.answer_img_en
@@ -326,9 +462,9 @@ fun QuizScreen(
                     ) {
                         Row(
                             modifier = Modifier.padding(16.dp),
-                            verticalAlignment = Alignment.CenterVertically
+                            verticalAlignment = Alignment.Top
                         ) {
-                            // Custom Radio Circle
+
                             Box(
                                 modifier = Modifier
                                     .size(24.dp)
@@ -353,9 +489,9 @@ fun QuizScreen(
                             Spacer(modifier = Modifier.width(16.dp))
 
                             Column {
-                                // Option Image (If exists)
+
                                 val optImg = optionsImgList[index]
-                                if (!optImg.isNullOrEmpty() && optImg != "/config/image/option/") {
+                                if (!optImg.isNullOrEmpty() && optImg != "/config/image/option/" && optImg != "/config/image/option/image.hindi") {
                                     AsyncImage(
                                         model = baseUrl + optImg,
                                         contentDescription = "Option Image",
@@ -365,14 +501,12 @@ fun QuizScreen(
                                     Spacer(modifier = Modifier.height(8.dp))
                                 }
 
-                                // Option Text
                                 Text(text = optionText, fontSize = 16.sp, color = Color.DarkGray)
                             }
                         }
                     }
                 }
 
-                // Bottom spacing for scroll clearance above the BottomBar
                 Spacer(modifier = Modifier.height(32.dp))
             }
         }

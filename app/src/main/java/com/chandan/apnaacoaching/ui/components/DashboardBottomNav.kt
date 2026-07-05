@@ -69,7 +69,7 @@ fun DashboardBottomNav(
                 selected = currentRoute == screen.route,
                 onClick = {
                     navController.navigate(screen.route) {
-                        // Pop up to the start destination to avoid massive backstacks
+
                         popUpTo(navController.graph.startDestinationId) { saveState = true }
                         launchSingleTop = true
                         restoreState = true

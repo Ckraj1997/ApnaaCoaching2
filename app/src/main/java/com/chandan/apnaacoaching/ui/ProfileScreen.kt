@@ -95,7 +95,6 @@ fun ProfileScreen(
                 is ProfileState.Success -> {
                     val profile = state.profile
 
-                    // Added vertical scroll in case the details push past small screens
                     Column(
                         modifier = Modifier
                             .fillMaxSize()
@@ -103,7 +102,7 @@ fun ProfileScreen(
                             .padding(16.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        // Profile Picture logic with Coil
+
                         Box(
                             modifier = Modifier
                                 .size(100.dp)
@@ -139,7 +138,6 @@ fun ProfileScreen(
 
                         Spacer(modifier = Modifier.height(32.dp))
 
-                        // COINS CARD
                         Card(
                             modifier = Modifier.fillMaxWidth(),
                             colors = CardDefaults.cardColors(containerColor = Color(0xFFFFF3E0)),
@@ -177,7 +175,6 @@ fun ProfileScreen(
 
                         Spacer(modifier = Modifier.height(24.dp))
 
-                        // COMPLETE USER INFO CARD
                         Card(
                             modifier = Modifier.fillMaxWidth(),
                             colors = CardDefaults.cardColors(containerColor = Color.White),
@@ -204,7 +201,6 @@ fun ProfileScreen(
                                         ?: "Not added")
                                 HorizontalDivider(color = Color(0xFFF5F5F5))
 
-                                // Compile the full address securely
                                 val fullAddress = listOfNotNull(
                                     profile.location?.takeIf { it.isNotBlank() && it != "N/A" },
                                     profile.city?.takeIf { it.isNotBlank() && it != "N/A" },
@@ -220,7 +216,6 @@ fun ProfileScreen(
                             }
                         }
 
-                        // Add some padding at the bottom so the FAB doesn't cover the text
                         Spacer(modifier = Modifier.height(80.dp))
                     }
                 }

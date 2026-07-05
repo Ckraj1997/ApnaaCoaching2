@@ -26,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.chandan.apnaacoaching.navigation.DashboardNavGraph
 import com.chandan.apnaacoaching.navigation.Screen
@@ -39,14 +40,19 @@ fun DashboardScreen(
     userId: String,
     viewModel: DashboardViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
 ) {
-    // 1. Initialize the Navigation Controller
+
     val navController = rememberNavController()
 
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
-    // 2. Observe the Live Data from Hostinger
     val uiState by viewModel.uiState.collectAsState()
+
+    val hideBottomBar = currentRoute?.startsWith("instructions") == true ||
+            currentRoute?.startsWith("quiz_screen") == true ||
+            currentRoute?.startsWith("result_screen") == true
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -99,12 +105,13 @@ fun DashboardScreen(
                 DashboardTopBar(onOpenDrawer = { scope.launch { drawerState.open() } })
             },
             bottomBar = {
-                DashboardBottomNav(navController = navController)
+                if (!hideBottomBar) {
+                    DashboardBottomNav(navController = navController)
+                }
             },
             containerColor = MaterialTheme.colorScheme.background
         ) { innerPadding ->
 
-            // 3. The NavGraph handles everything else seamlessly!
             DashboardNavGraph(
                 navController = navController,
                 modifier = Modifier.padding(innerPadding),

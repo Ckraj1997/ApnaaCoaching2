@@ -30,21 +30,16 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        // 1. Initialize SessionManager before drawing the UI
         val sessionManager = SessionManager(this)
 
         setContent {
             ApnaaCoachingTheme {
 
-                // 2. Read state from the phone's local storage
                 var loggedInUserId by remember { mutableStateOf(sessionManager.getUserId()) }
                 var loggedInUserName by remember { mutableStateOf(sessionManager.getUserName()) }
 
-                // 3. Routing Logic based on state
                 if (loggedInUserId != null && loggedInUserName != null) {
 
-                    // IF LOGGED IN: Show the Dashboard directly.
-                    // (DashboardScreen handles its own Scaffold)
                     DashboardScreen(
                         userName = loggedInUserName!!,
                         userId = loggedInUserId!!
@@ -52,7 +47,6 @@ class MainActivity : ComponentActivity() {
 
                 } else {
 
-                    // IF NOT LOGGED IN: Show the Login Screen
                     val authViewModel: AuthViewModel = viewModel()
 
                     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
@@ -81,8 +75,7 @@ class MainActivity : ComponentActivity() {
                                 ).show()
                             },
                             onLoginSuccess = {
-                                // 4. When login succeeds, just update the state!
-                                // Compose will automatically hide the LoginScreen and show the DashboardScreen.
+
                                 loggedInUserId = sessionManager.getUserId()
                                 loggedInUserName = sessionManager.getUserName()
                             }

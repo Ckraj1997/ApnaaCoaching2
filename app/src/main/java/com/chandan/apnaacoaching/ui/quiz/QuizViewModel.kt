@@ -1,7 +1,5 @@
 package com.chandan.apnaacoaching.ui.quiz
 
-//import androidx.compose.ui.text.intl.Locale
-//import androidx.compose.ui.text.intl.Locale
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.chandan.apnaacoaching.data.CbtQuestion
@@ -11,6 +9,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.util.Locale
 import kotlin.time.Duration.Companion.milliseconds
@@ -22,24 +21,33 @@ class QuizViewModel : ViewModel() {
     private val _currentIndex = MutableStateFlow(0)
     val currentIndex = _currentIndex.asStateFlow()
 
-    // Tracks selected answer IDs: Key = Question ID, Value = Selected Option ID
     private val _userAnswers = MutableStateFlow<MutableMap<String, String>>(mutableMapOf())
     val userAnswers = _userAnswers.asStateFlow()
 
-    // --- NEW: Timer State ---
     private val _formattedTime = MutableStateFlow("00:00:00")
     val formattedTime = _formattedTime.asStateFlow()
     private var timerJob: Job? = null
 
-    // Stores a Set of Question IDs that are marked for review
     private val _markedQuestions = MutableStateFlow<Set<String>>(emptySet())
     val markedQuestions = _markedQuestions.asStateFlow()
+
+    private val _isAutoSubmitted = MutableStateFlow(false)
+    val isAutoSubmitted = _isAutoSubmitted.asStateFlow()
+
+    private val _visitedQuestions = MutableStateFlow<Set<String>>(emptySet())
+    val visitedQuestions = _visitedQuestions.asStateFlow()
+
+    fun markQuestionAsVisited(questionId: String) {
+
+        _visitedQuestions.update { currentSet ->
+            currentSet + questionId
+        }
+    }
 
     fun toggleMarkForReview() {
         val currentQuestionId = _questions.value.getOrNull(_currentIndex.value)?.id ?: return
         val currentMarked = _markedQuestions.value.toMutableSet()
 
-        // Toggle logic: If it's already marked, unmark it. Otherwise, mark it.
         if (currentMarked.contains(currentQuestionId)) {
             currentMarked.remove(currentQuestionId)
         } else {
@@ -48,18 +56,15 @@ class QuizViewModel : ViewModel() {
         _markedQuestions.value = currentMarked
     }
 
-    // --- NEW: Button Logic ---
     fun clearAnswer() {
         val currentQuestionId = _questions.value.getOrNull(_currentIndex.value)?.id ?: return
         val currentAnswers = _userAnswers.value.toMutableMap()
 
-        // Remove the answer for the current question
         currentAnswers.remove(currentQuestionId)
         _userAnswers.value = currentAnswers
     }
 
-    // --- NEW: Timer Logic ---
-    fun startTimer(durationInMinutes: Int,userId: String, quizId: Int) {
+    fun startTimer(durationInMinutes: Int, userId: String, quizId: Int) {
         timerJob?.cancel() // Reset if already running
         var timeLeftInSeconds = durationInMinutes * 60
 
@@ -69,7 +74,6 @@ class QuizViewModel : ViewModel() {
                 val m = (timeLeftInSeconds % 3600) / 60
                 val s = timeLeftInSeconds % 60
 
-                // Format nicely as HH:MM:SS
                 _formattedTime.value = String.format(Locale.getDefault(), "%02d:%02d:%02d", h, m, s)
 
                 delay(1000L.milliseconds) // Wait 1 second
@@ -77,36 +81,35 @@ class QuizViewModel : ViewModel() {
             }
             _formattedTime.value = "00:00:00"
 
-            // Trigger auto-submit
             submitQuiz(userId, quizId) { isSuccess, message ->
-                // You can log this or trigger a UI event to show a "Time's Up!" dialog
-                println("Auto-submission result: $message")
+                if (isSuccess) {
+
+                    _isAutoSubmitted.value = true
+                }
             }
         }
     }
 
-    // --- NEW: Direct Navigation for the Palette ---
     fun goToQuestion(index: Int) {
         if (index in _questions.value.indices) {
             _currentIndex.value = index
         }
     }
 
-    fun fetchQuestions(quizId: Int, userId: String) {
+    fun fetchQuestions(quizId: Int, userId: String, durationInMinutes: Int) {
         viewModelScope.launch {
             try {
-                // सीधे List प्राप्त करें
+
                 val responseList = RetrofitClient.practiceApi.getQuestions(quizId)
 
                 _questions.value = responseList
                 _currentIndex.value = 0
                 _userAnswers.value = mutableMapOf()
                 _markedQuestions.value = emptySet()
+                _visitedQuestions.value = emptySet()
+                _isAutoSubmitted.value = false
 
-                // Start the timer when questions load (e.g., 90 minutes)
-                // If your backend provides the specific duration, pass that variable here instead
-                startTimer(90, userId, quizId)
-
+                startTimer(durationInMinutes, userId, quizId)
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -131,11 +134,9 @@ class QuizViewModel : ViewModel() {
         }
     }
 
-
     fun getSubmissionData(userId: String, quizId: Int): QuizSubmission {
         val allQuestions = _questions.value
 
-        // Initialize lists
         val answerList = mutableListOf<Int?>()
         val statusList = mutableListOf<String>()
         val questionNumberList = mutableListOf<Int>()
@@ -143,13 +144,10 @@ class QuizViewModel : ViewModel() {
         allQuestions.forEach { question ->
             val selectedOptionId = _userAnswers.value[question.id]
 
-            // Add Question ID
             questionNumberList.add(question.id.toInt())
 
-            // Add Answer ID (null if not answered)
             answerList.add(selectedOptionId?.toInt())
 
-            // Determine Status
             val status = if (selectedOptionId != null) "answered" else "not_answered"
             statusList.add(status)
         }
@@ -178,5 +176,43 @@ class QuizViewModel : ViewModel() {
                 onComplete(false, "Network error: ${e.message}")
             }
         }
+    }
+
+    fun calculateResult(): Triple<Int, Int, Int> {
+        var correct = 0
+        var wrong = 0
+        val unattempted = _questions.value.size - _userAnswers.value.size
+
+        _questions.value.forEach { question ->
+            val selectedOptionId = _userAnswers.value[question.id]
+
+            if (selectedOptionId != null) {
+                if (selectedOptionId == question.right_id) {
+                    correct++
+                } else {
+                    wrong++
+                }
+            }
+        }
+
+        return Triple(correct, wrong, unattempted)
+    }
+
+    fun calculateFinalScore(plusPoint: Int, minusPoint: Int): Int {
+        var correct = 0
+        var wrong = 0
+
+        _questions.value.forEach { question ->
+            val selectedOptionId = _userAnswers.value[question.id]
+            if (selectedOptionId != null) {
+                if (selectedOptionId == question.right_id) {
+                    correct++
+                } else {
+                    wrong++
+                }
+            }
+        }
+
+        return (correct * plusPoint) - (wrong * minusPoint)
     }
 }

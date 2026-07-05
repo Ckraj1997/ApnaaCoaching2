@@ -20,7 +20,6 @@ class PracticeViewModel : ViewModel() {
     private val _uiState = MutableStateFlow<PracticeState>(PracticeState.Loading)
     val uiState: StateFlow<PracticeState> = _uiState.asStateFlow()
 
-    // Filtered Lists
     private val _liveTests = MutableStateFlow<List<CbtTest>>(emptyList())
     val liveTests: StateFlow<List<CbtTest>> = _liveTests.asStateFlow()
 
@@ -34,7 +33,7 @@ class PracticeViewModel : ViewModel() {
                 val response = RetrofitClient.practiceApi.getCbtList(userId)
 
                 if (response.status == "success") {
-                    // THE MAGIC FILTER: Automatically split the lists based on PHP time logic!
+
                     _liveTests.value = response.cbts.filter { it.testStatus == "live" }
                     _mockTests.value =
                         response.cbts.filter { it.testStatus == "mock" || it.testStatus == "upcoming" }
@@ -52,22 +51,19 @@ class PracticeViewModel : ViewModel() {
     fun enrollInTest(userId: String, cbtId: Int, onResult: (String) -> Unit) {
         viewModelScope.launch {
             try {
-                // Call the API with the new parameter name
+
                 val response = RetrofitClient.practiceApi.enrollInTest(userId, cbtId)
 
-                // Send the message back to the UI to show in a Toast
                 onResult(response.message)
 
-                // If successful, re-fetch the tests so the button instantly updates to "Start Test"
                 if (response.status == "success") {
                     fetchTests(userId)
 
-                    // Optional: If you have a global User state, you could also update
-                    // the user's coin balance here using response.newCoinBalance!
                 }
             } catch (e: Exception) {
                 onResult("Network error: $e")
             }
         }
     }
+
 }

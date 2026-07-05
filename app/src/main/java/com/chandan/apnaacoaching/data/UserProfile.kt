@@ -12,7 +12,7 @@ data class UserProfile(
     val city: String?,
     val state: String?,
     val coins: Int,
-    val dob: String?,       // <-- ADDED THIS
-    val location: String?,  // <-- ADDED THIS,
-    val pincode: String?   // <-- ADDED THIS
+    val dob: String?, // <-- ADDED THIS
+    val location: String?, // <-- ADDED THIS,
+    val pincode: String? // <-- ADDED THIS
 )

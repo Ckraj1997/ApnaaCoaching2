@@ -12,10 +12,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-// 1. Upgraded to AndroidViewModel to access the application context
 class AuthViewModel(application: Application) : AndroidViewModel(application) {
 
-    // 2. Initialize the SessionManager
     private val sessionManager = SessionManager(application)
 
     private val _authState = MutableStateFlow<AuthState>(AuthState.Idle)
@@ -33,7 +31,6 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
                 val response = RetrofitClient.authApi.login(request)
                 if (response.status == "success") {
 
-                    // 3. PERSIST THE LOGIN: Save the user data locally to the phone!
                     val userId = response.userId ?: ""
                     val userName = response.name ?: response.firstName ?: "Student"
                     sessionManager.saveUser(userId, userName)
@@ -48,7 +45,6 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-
     fun loginWithGoogleToken(idToken: String) {
         _authState.value = AuthState.Loading
         viewModelScope.launch {
@@ -57,7 +53,6 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
 
                 if (response.status == "success") {
 
-                    // 4. PERSIST THE LOGIN: Do the same for Google Sign-In
                     val userId = response.userId ?: ""
                     val userName = response.name ?: response.firstName ?: "Student"
                     sessionManager.saveUser(userId, userName)

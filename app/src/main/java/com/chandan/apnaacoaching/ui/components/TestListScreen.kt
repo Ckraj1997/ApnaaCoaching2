@@ -19,17 +19,23 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -52,7 +58,6 @@ fun TestListScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
-    // Choose which list to observe based on the argument passed in!
     val tests by if (testType == "live") {
         viewModel.liveTests.collectAsState()
     } else {
@@ -60,10 +65,7 @@ fun TestListScreen(
     }
 
     Scaffold { _ ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-        ) {
+        Box(modifier = Modifier.fillMaxSize()) {
             when (val state = uiState) {
                 is PracticeState.Loading -> {
                     CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
@@ -114,6 +116,8 @@ fun CbtTestCard(
     navController: NavController
 ) {
     val context = LocalContext.current
+    var isLoadingResult by remember { mutableStateOf(false) }
+
     ElevatedCard(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.elevatedCardColors(containerColor = Color.White)
@@ -142,32 +146,55 @@ fun CbtTestCard(
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(text = "${test.timeDuration} mins", style = MaterialTheme.typography.bodySmall)
 
-                Spacer(modifier = Modifier.weight(1f))
+                Spacer(modifier = Modifier.width(16.dp))
 
+                Text(
+                    text = "Marks: +${test.plusPoint} | -${test.minusPoint}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.DarkGray
+                )
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+            HorizontalDivider()
+            Spacer(modifier = Modifier.height(8.dp))
+
+            if (test.isSubmitted) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    OutlinedButton(
+                        onClick = { navController.navigate("instructions/${test.id}") },
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text("Reattempt")
+                    }
+                    Button(
+                        onClick = {
+
+                            navController.navigate("detailed_result_screen/${test.id}/$userId")
+                        },
+                        modifier = Modifier.weight(1f),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50))
+                    ) {
+                        Text("View Result")
+                    }
+                }
+            } else {
                 Button(
                     onClick = {
-
                         if (test.isEnrolled) {
-                            // Already enrolled -> navigate to test instructions/start screen
-                            // Note: We will need to create this route in your NavGraph later!
                             navController.navigate("instructions/${test.id}")
                         } else {
-                            // Not enrolled -> trigger the enrollment API
                             viewModel.enrollInTest(userId, test.id) { message ->
                                 Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
                             }
                         }
-
                     },
-                    enabled = !test.isSubmitted
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text(
-                        when {
-                            test.isSubmitted -> "Completed"
-                            test.isEnrolled -> "Start Test"
-                            else -> "Enroll for ${test.entryFee} Coins"
-                        }
-                    )
+                    Text(if (test.isEnrolled) "Start Test" else "Enroll for ${test.entryFee} Coins")
                 }
             }
         }

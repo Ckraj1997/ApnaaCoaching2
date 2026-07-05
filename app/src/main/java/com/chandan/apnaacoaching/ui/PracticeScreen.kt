@@ -43,7 +43,7 @@ fun PracticeScreen(
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        // Header
+
         Text(
             text = "Practice Zone",
             style = MaterialTheme.typography.headlineMedium,
@@ -59,7 +59,6 @@ fun PracticeScreen(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Tile 1: Live Test
         PracticeTile(
             title = "Live Test",
             description = "Compete with thousands of students in real-time.",
@@ -68,7 +67,6 @@ fun PracticeScreen(
             iconColor = Color(0xFF1976D2),
             onClick = { navController.navigate("test_list/live") })
 
-        // Tile 2: Mock Test
         PracticeTile(
             title = "Mock Test",
             description = "Full-length tests based on the latest BPSC & UGC NET patterns.",
@@ -77,7 +75,6 @@ fun PracticeScreen(
             iconColor = Color(0xFF388E3C),
             onClick = { navController.navigate("test_list/mock") })
 
-        // Tile 3: KBC Game
         PracticeTile(
             title = "Play KBC",
             description = "Learn with fun! Answer questions, use lifelines, and win points.",
@@ -112,7 +109,7 @@ fun PracticeTile(
                 .padding(20.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Icon Box
+
             Box(
                 modifier = Modifier
                     .size(56.dp)
@@ -129,7 +126,6 @@ fun PracticeTile(
 
             Spacer(modifier = Modifier.width(16.dp))
 
-            // Text Content
             Column {
                 Text(
                     text = title,

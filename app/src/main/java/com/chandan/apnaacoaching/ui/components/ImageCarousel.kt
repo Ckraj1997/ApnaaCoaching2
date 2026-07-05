@@ -35,18 +35,11 @@ fun ImageCarousel(images: List<CarouselImage>) {
     if (images.isEmpty()) return
     val pageCount = images.size
     val pagerState = rememberPagerState(pageCount = { pageCount })
-//    LaunchedEffect(pagerState.currentPage) {
-//        delay(3000.milliseconds)
-//        val nextPage = (pagerState.currentPage + 1) % pageCount
-//        pagerState.animateScrollToPage(nextPage)
-//    }
 
-    // THE FIX: Run a continuous loop that doesn't cancel when the page changes
     LaunchedEffect(Unit) {
         while (true) {
             delay(3000.milliseconds)
 
-            // Only auto-scroll if the user isn't currently dragging the carousel
             if (!pagerState.isScrollInProgress) {
                 val nextPage = (pagerState.currentPage + 1) % pageCount
                 pagerState.animateScrollToPage(nextPage)

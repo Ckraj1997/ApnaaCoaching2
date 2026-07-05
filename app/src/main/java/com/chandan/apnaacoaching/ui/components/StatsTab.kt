@@ -1,0 +1,157 @@
+package com.chandan.apnaacoaching.ui.components
+
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.chandan.apnaacoaching.data.ResultStats
+import com.chandan.apnaacoaching.data.TestConfig
+
+@Composable
+fun StatsTab(stats: ResultStats?, config: TestConfig?) {
+    if (stats == null) return
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+
+        if (config != null) {
+
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 16.dp),
+                colors = CardDefaults.cardColors(containerColor = Color.White),
+                border = BorderStroke(1.dp, Color.LightGray)
+            ) {
+                Row(
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text("Duration", color = Color.Gray, fontSize = 12.sp)
+                        Text("${config.time_duration} mins", fontWeight = FontWeight.Bold)
+                    }
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text("Correct (+)", color = Color.Gray, fontSize = 12.sp)
+                        Text(
+                            "+${config.plus_point}",
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF4CAF50)
+                        )
+                    }
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text("Incorrect (-)", color = Color.Gray, fontSize = 12.sp)
+                        Text(
+                            "-${config.minus_point}",
+                            fontWeight = FontWeight.Bold,
+                            color = Color.Red
+                        )
+                    }
+                }
+            }
+        }
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 24.dp),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
+        ) {
+            Column(
+                modifier = Modifier
+                    .padding(24.dp)
+                    .fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text("Marks Obtained", color = MaterialTheme.colorScheme.primary)
+                Text(
+                    stats.marks_text,
+                    fontSize = 40.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
+        }
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            StatBox(title = "Total", value = stats.total.toString(), modifier = Modifier.weight(1f))
+            StatBox(
+                title = "Attempted",
+                value = stats.attempted.toString(),
+                modifier = Modifier.weight(1f)
+            )
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            StatBox(
+                title = "Correct",
+                value = stats.correct.toString(),
+                color = Color(0xFF4CAF50),
+                modifier = Modifier.weight(1f)
+            )
+            StatBox(
+                title = "Wrong",
+                value = stats.wrong.toString(),
+                color = Color(0xFFF44336),
+                modifier = Modifier.weight(1f)
+            )
+            StatBox(
+                title = "Skipped",
+                value = stats.unattempted.toString(),
+                color = Color.Gray,
+                modifier = Modifier.weight(1f)
+            )
+        }
+    }
+}
+
+@Composable
+fun StatBox(
+    title: String,
+    value: String,
+    modifier: Modifier = Modifier,
+    color: Color = Color.DarkGray
+) {
+    Card(
+        modifier = modifier,
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(value, fontSize = 24.sp, fontWeight = FontWeight.Bold, color = color)
+            Text(title, fontSize = 12.sp, color = Color.Gray)
+        }
+    }
+}

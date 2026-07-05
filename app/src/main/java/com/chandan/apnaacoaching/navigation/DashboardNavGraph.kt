@@ -3,6 +3,8 @@ package com.chandan.apnaacoaching.navigation
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -16,9 +18,12 @@ import com.chandan.apnaacoaching.ui.PracticeViewModel
 import com.chandan.apnaacoaching.ui.ProfileScreen
 import com.chandan.apnaacoaching.ui.ProfileViewModel
 import com.chandan.apnaacoaching.ui.components.TestListScreen
+import com.chandan.apnaacoaching.ui.quiz.DetailedResultScreen
 import com.chandan.apnaacoaching.ui.quiz.InstructionsScreen
 import com.chandan.apnaacoaching.ui.quiz.QuizScreen
 import com.chandan.apnaacoaching.ui.quiz.QuizViewModel
+import com.chandan.apnaacoaching.ui.quiz.ResultScreen
+import com.chandan.apnaacoaching.ui.quiz.ResultViewModel
 
 @Composable
 fun DashboardNavGraph(
@@ -46,9 +51,7 @@ fun DashboardNavGraph(
                 onRetry = onRetry
             )
         }
-//        composable(Screen.Practice.route) {
-//            PracticeScreen()
-//        }
+
         composable(Screen.Cart.route) {
             ComingSoonScreen(featureName = "My Cart")
         }
@@ -63,10 +66,9 @@ fun DashboardNavGraph(
         }
 
         composable(Screen.Practice.route) {
-            // Trigger the fetch when the user opens the practice screen
+
             LaunchedEffect(Unit) { practiceViewModel.fetchTests(userId) }
 
-            // Pass navController so the tiles can click through
             PracticeScreen(navController = navController)
         }
 
@@ -80,30 +82,49 @@ fun DashboardNavGraph(
             )
         }
 
-        // --- ADD THIS BLOCK ---
         composable("instructions/{quizId}") { backStackEntry ->
             val quizId = backStackEntry.arguments?.getString("quizId")?.toInt() ?: 0
 
+            val liveTests by practiceViewModel.liveTests.collectAsState()
+            val mockTests by practiceViewModel.mockTests.collectAsState()
+
+            val liveTest = liveTests.find { it.id == quizId }
+            val mockTest = mockTests.find { it.id == quizId }
+
+            val testHeading = liveTest?.heading ?: mockTest?.heading ?: "Assessment"
+
             InstructionsScreen(
                 quizId = quizId,
+                heading = testHeading, // <-- FIX: We are now passing the heading
                 navController = navController
             )
         }
-        // ----------------------
 
-        composable("quiz_screen/{quizId}") { backStackEntry ->
+        composable("quiz_screen/{quizId}?lang={lang}") { backStackEntry ->
             val quizId = backStackEntry.arguments?.getString("quizId")?.toInt() ?: 0
+
+            val lang = backStackEntry.arguments?.getString("lang") ?: "en"
+
+            val liveTests by practiceViewModel.liveTests.collectAsState()
+            val mockTests by practiceViewModel.mockTests.collectAsState()
+
+            val liveTest = liveTests.find { it.id == quizId }
+            val mockTest = mockTests.find { it.id == quizId }
+
+            val testDuration = liveTest?.timeDuration ?: mockTest?.timeDuration ?: 90
+
             val viewModel: QuizViewModel = viewModel()
 
             LaunchedEffect(quizId) {
-                viewModel.fetchQuestions(quizId, userId)
+                viewModel.fetchQuestions(quizId, userId, testDuration)
             }
 
             QuizScreen(
                 viewModel = viewModel,
                 quizId = quizId,
-                userId = userId, // <-- NEW: Pass the userId down
-                navController = navController
+                userId = userId,
+                navController = navController,
+                initialLang = lang // <-- FIX: We are now passing the initial language
             )
         }
 
@@ -111,6 +132,37 @@ fun DashboardNavGraph(
             ProfileScreen(
                 userId = userId, // Pass the dynamic user ID you passed into the graph
                 viewModel = profileViewModel,
+                navController = navController
+            )
+        }
+
+        composable("result_screen/{testType}/{correct}/{wrong}/{skipped}/{total}") { backStackEntry ->
+            val testType = backStackEntry.arguments?.getString("testType") ?: "mock"
+            val correct = backStackEntry.arguments?.getString("correct")?.toInt() ?: 0
+            val wrong = backStackEntry.arguments?.getString("wrong")?.toInt() ?: 0
+            val skipped = backStackEntry.arguments?.getString("skipped")?.toInt() ?: 0
+            val total = backStackEntry.arguments?.getString("total")?.toInt() ?: 0
+
+            ResultScreen(
+                navController = navController,
+                testType = testType,
+                totalQuestions = total,
+                correctCount = correct,
+                wrongCount = wrong,
+                unattemptedCount = skipped
+            )
+        }
+
+        composable("detailed_result_screen/{quizId}/{userId}") { backStackEntry ->
+            val quizId = backStackEntry.arguments?.getString("quizId")?.toInt() ?: 0
+            val routeUserId = backStackEntry.arguments?.getString("userId") ?: userId
+
+            val resultViewModel: ResultViewModel = viewModel()
+
+            DetailedResultScreen(
+                quizId = quizId,
+                userId = routeUserId,
+                viewModel = resultViewModel,
                 navController = navController
             )
         }
