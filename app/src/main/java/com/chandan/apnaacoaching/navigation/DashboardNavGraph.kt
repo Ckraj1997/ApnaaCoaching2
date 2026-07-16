@@ -31,6 +31,10 @@ import com.chandan.apnaacoaching.ui.quiz.ResultViewModel
 import com.chandan.apnaacoaching.ui.studymaterial.StudyMaterialScreen
 import com.chandan.apnaacoaching.ui.studymaterial.oneliner.OneLinerScreen
 import com.chandan.apnaacoaching.ui.studymaterial.oneliner.OneLinerViewModel
+import com.chandan.apnaacoaching.ui.studymaterial.quiz.QuizListScreen
+import com.chandan.apnaacoaching.ui.studymaterial.quiz.QuizListViewModel
+import com.chandan.apnaacoaching.ui.studymaterial.subjective.SubjectiveScreen
+import com.chandan.apnaacoaching.ui.studymaterial.subjective.SubjectiveViewModel
 
 @Composable
 fun DashboardNavGraph(
@@ -232,6 +236,37 @@ fun DashboardNavGraph(
                 catId = categoryId,
                 viewModel = oneLinerViewModel,
                 navController = navController
+            )
+        }
+
+        composable("subjective_screen/{groupId}/{levelId}/{categoryId}") { backStackEntry ->
+            val groupId = backStackEntry.arguments?.getString("groupId") ?: ""
+            val levelId = backStackEntry.arguments?.getString("levelId") ?: ""
+            val categoryId = backStackEntry.arguments?.getString("categoryId") ?: ""
+
+             val subjectiveViewModel: SubjectiveViewModel = viewModel()
+            SubjectiveScreen(
+                groupId = groupId,
+                levelId = levelId,
+                catId = categoryId,
+                viewModel = subjectiveViewModel, // pass your initialized viewmodel here
+                navController = navController
+            )
+        }
+
+        composable("quiz_list_screen/{groupId}/{levelId}/{categoryId}") { backStackEntry ->
+            val groupId = backStackEntry.arguments?.getString("groupId") ?: ""
+            val levelId = backStackEntry.arguments?.getString("levelId") ?: ""
+            val categoryId = backStackEntry.arguments?.getString("categoryId") ?: ""
+
+            val quizListViewModel: QuizListViewModel = viewModel()
+            QuizListScreen(
+                groupId = groupId,
+                levelId = levelId,
+                catId = categoryId,
+                viewModel = quizListViewModel, // pass your initialized viewmodel here
+                navController = navController,
+                userId = userId
             )
         }
     }

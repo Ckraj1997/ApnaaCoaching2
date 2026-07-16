@@ -142,7 +142,7 @@ fun StudyMaterialScreen(
                             }
 
                             "subjective" -> {
-//                                navController.navigate("subjective_screen/$groupId/$levelId/$categoryId")
+                                navController.navigate("subjective_screen/$groupId/$levelId/$categoryId")
                             }
 
                             "pdf" -> {
@@ -154,7 +154,7 @@ fun StudyMaterialScreen(
                             }
 
                             "quiz" -> {
-//                                navController.navigate("quiz_list_screen/$groupId/$levelId/$categoryId")
+                                navController.navigate("quiz_list_screen/$groupId/$levelId/$categoryId")
                             }
 
                             "update" -> {
