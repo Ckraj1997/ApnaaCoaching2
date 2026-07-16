@@ -34,9 +34,10 @@ class PracticeViewModel : ViewModel() {
 
                 if (response.status == "success") {
 
-                    _liveTests.value = response.cbts.filter { it.testStatus == "live" }
+                    _liveTests.value =
+                        response.cbts.filter { it.testStatus == "live" || it.testStatus == "upcoming" }
                     _mockTests.value =
-                        response.cbts.filter { it.testStatus == "mock" || it.testStatus == "upcoming" }
+                        response.cbts.filter { it.testStatus == "mock" }
 
                     _uiState.value = PracticeState.Success
                 } else {
@@ -65,5 +66,6 @@ class PracticeViewModel : ViewModel() {
             }
         }
     }
+
 
 }

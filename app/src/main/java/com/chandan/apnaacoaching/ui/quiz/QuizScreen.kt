@@ -40,7 +40,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -234,8 +233,13 @@ fun QuizScreen(
     val currentQue = questions[currentIndex]
     val baseUrl = "https://apnaacoaching.in"
 
-    Scaffold(
-        topBar = {
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = Color(0xFFF8F9FA) // Main background color
+    ) {
+        Column(modifier = Modifier.fillMaxSize()) {
+
+            // --- 1. TOP BAR ---
             Surface(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -249,9 +253,8 @@ fun QuizScreen(
                         .padding(horizontal = 16.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-
                     Row(
-                        modifier = Modifier.weight(1f), // Takes up available space
+                        modifier = Modifier.weight(1f),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(
@@ -270,9 +273,196 @@ fun QuizScreen(
                     }
                 }
             }
-        },
-        bottomBar = {
 
+            // --- 2. MAIN SCROLLABLE CONTENT ---
+            // The weight(1f) ensures this section perfectly fills the space
+            // between the Top Bar and Bottom Bar without ever overlapping.
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+            ) {
+                // Question Palette
+                LazyRow(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(Color.White)
+                        .padding(vertical = 8.dp),
+                    contentPadding = PaddingValues(horizontal = 16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(questions.size) { index ->
+                        val qId = questions[index].id
+                        val isCurrent = index == currentIndex
+                        val isAns = answers.containsKey(qId) && answers[qId] != null
+
+                        val isMarked = markedQuestions.contains(qId)
+                        val isVisited = visitedQuestions.contains(qId)
+
+                        val bgColor = when {
+                            isAns && isMarked -> ColorAnsweredMarked
+                            !isAns && isMarked -> ColorMarked
+                            isAns -> ColorAnswered
+                            isCurrent -> ColorNotAnswered
+                            isVisited -> ColorNotAnswered
+                            else -> ColorNotVisited
+                        }
+                        val textColor = if (bgColor == ColorNotVisited) Color.Black else Color.White
+
+                        Box(
+                            modifier = Modifier
+                                .size(36.dp)
+                                .clip(CircleShape)
+                                .background(bgColor)
+                                .border(
+                                    width = if (isCurrent) 2.dp else 0.dp,
+                                    color = if (isCurrent) Color.Black else Color.Transparent,
+                                    shape = CircleShape
+                                )
+                                .clickable { viewModel.goToQuestion(index) },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = (index + 1).toString(),
+                                color = textColor,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 14.sp
+                            )
+                        }
+                    }
+                }
+
+                HorizontalDivider()
+
+                // Scrollable Question & Options Area
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
+                        .padding(16.dp)
+                ) {
+                    Text(
+                        text = "Question ${currentIndex + 1}",
+                        color = MaterialTheme.colorScheme.primary,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    val displayQuestion = if (isHindi) currentQue.que_hi else currentQue.que_En
+                    Text(
+                        text = displayQuestion,
+                        style = MaterialTheme.typography.titleLarge,
+                        lineHeight = 28.sp,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .wrapContentHeight()
+                    )
+
+                    val displayImg = if (isHindi) currentQue.que_img_Hi else currentQue.que_img_En
+                    if (!displayImg.isNullOrEmpty() && displayImg != "/config/image/question/" && displayImg != "/config/image/question/image.hindi" && displayImg != "/config/image/option/" && displayImg != "/config/image/option/image.hindi") {
+                        Spacer(modifier = Modifier.height(16.dp))
+                        AsyncImage(
+                            model = baseUrl + displayImg,
+                            contentDescription = "Question Image",
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .heightIn(max = 200.dp),
+                            contentScale = ContentScale.FillWidth
+                        )
+
+//                        val optImg = optionsImgList[index]
+//                        if (!optImg.isNullOrEmpty() && optImg != "/config/image/option/" && optImg != "/config/image/option/image.hindi") {
+//                            AsyncImage(
+//                                model = baseUrl + optImg,
+//                                contentDescription = "Option Image",
+//                                modifier = Modifier.heightIn(max = 100.dp),
+//                                contentScale = ContentScale.Fit
+//                            )
+//                            Spacer(modifier = Modifier.height(8.dp))
+//                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(24.dp))
+
+                    val optionsList = if (isHindi) currentQue.answer_hi else currentQue.answer_en
+                    val optionsImgList =
+                        if (isHindi) currentQue.answer_img_hi else currentQue.answer_img_en
+
+                    optionsList.forEachIndexed { index, optionText ->
+                        val optionId = currentQue.answers_id[index]
+                        val isSelected = answers[currentQue.id] == optionId
+
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 6.dp)
+                                .clickable { viewModel.selectAnswer(currentQue.id, optionId) }
+                                .border(
+                                    width = if (isSelected) 2.dp else 1.dp,
+                                    color = if (isSelected) MaterialTheme.colorScheme.primary else Color.LightGray,
+                                    shape = RoundedCornerShape(8.dp)
+                                ),
+                            colors = CardDefaults.cardColors(
+                                containerColor = if (isSelected) MaterialTheme.colorScheme.primaryContainer.copy(
+                                    alpha = 0.5f
+                                ) else Color.White
+                            )
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(16.dp),
+                                verticalAlignment = Alignment.Top
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(24.dp)
+                                        .clip(CircleShape)
+                                        .border(
+                                            2.dp,
+                                            if (isSelected) MaterialTheme.colorScheme.primary else Color.Gray,
+                                            CircleShape
+                                        ),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    if (isSelected) {
+                                        Icon(
+                                            Icons.Default.CheckCircle,
+                                            contentDescription = "Selected",
+                                            tint = MaterialTheme.colorScheme.primary,
+                                            modifier = Modifier.size(20.dp)
+                                        )
+                                    }
+                                }
+
+                                Spacer(modifier = Modifier.width(16.dp))
+
+                                Column {
+                                    val optImg = optionsImgList[index]
+                                    if (!optImg.isNullOrEmpty() && optImg != "/config/image/option/" && optImg != "/config/image/option/image.hindi") {
+                                        AsyncImage(
+                                            model = baseUrl + optImg,
+                                            contentDescription = "Option Image",
+                                            modifier = Modifier.heightIn(max = 100.dp),
+                                            contentScale = ContentScale.Fit
+                                        )
+                                        Spacer(modifier = Modifier.height(8.dp))
+                                    }
+                                    Text(
+                                        text = optionText,
+                                        fontSize = 16.sp,
+                                        color = Color.DarkGray
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    // Added a spacer at the very bottom of the scroll just to give a little breathing room
+                    Spacer(modifier = Modifier.height(24.dp))
+                }
+            }
+
+            // --- 3. BOTTOM BAR ---
             Surface(shadowElevation = 8.dp, color = Color.White) {
                 Column {
                     Row(
@@ -317,7 +507,7 @@ fun QuizScreen(
 
                         if (currentIndex == questions.size - 1) {
                             Button(
-                                onClick = { showSubmitDialog = true }, // SHOW DIALOG HERE
+                                onClick = { showSubmitDialog = true },
                                 colors = ButtonDefaults.buttonColors(containerColor = ColorAnswered)
                             ) {
                                 Text("Submit Final")
@@ -337,178 +527,283 @@ fun QuizScreen(
                 }
             }
         }
-    ) { paddingValues ->
-
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(top = 56.dp)
-                .background(Color(0xFFF8F9FA))
-        ) {
-
-            LazyRow(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(Color.White)
-                    .padding(vertical = 8.dp),
-                contentPadding = PaddingValues(horizontal = 16.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                items(questions.size) { index ->
-                    val qId = questions[index].id
-                    val isCurrent = index == currentIndex
-                    val isAns = answers.containsKey(qId) && answers[qId] != null
-
-                    val isMarked = markedQuestions.contains(qId)
-                    val isVisited = visitedQuestions.contains(qId)
-
-                    val bgColor = when {
-                        isAns && isMarked -> ColorAnsweredMarked // Blue
-                        !isAns && isMarked -> ColorMarked // Purple
-                        isAns -> ColorAnswered // Green
-                        isCurrent -> ColorNotAnswered
-                        isVisited -> ColorNotAnswered// Red
-                        else -> ColorNotVisited // Gray
-                    }
-                    val textColor = if (bgColor == ColorNotVisited) Color.Black else Color.White
-
-                    Box(
-                        modifier = Modifier
-                            .size(36.dp)
-                            .clip(CircleShape)
-                            .background(bgColor)
-                            .border(
-                                width = if (isCurrent) 2.dp else 0.dp,
-                                color = if (isCurrent) Color.Black else Color.Transparent,
-                                shape = CircleShape
-                            )
-                            .clickable { viewModel.goToQuestion(index) },
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = (index + 1).toString(),
-                            color = textColor,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 14.sp
-                        )
-                    }
-                }
-            }
-            HorizontalDivider()
-
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-                    .padding(16.dp)
-            ) {
-
-                Text(
-                    text = "Question ${currentIndex + 1}",
-                    color = MaterialTheme.colorScheme.primary,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 16.sp
-                )
-                Spacer(modifier = Modifier.height(12.dp))
-
-                val displayQuestion = if (isHindi) currentQue.que_hi else currentQue.que_En
-                Text(
-                    text = displayQuestion,
-                    style = MaterialTheme.typography.titleLarge,
-                    lineHeight = 28.sp,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .wrapContentHeight()
-                )
-
-                val displayImg = if (isHindi) currentQue.que_img_Hi else currentQue.que_img_En
-                if (!displayImg.isNullOrEmpty() && displayImg != "/config/image/option/" && displayImg != "/config/image/option/image.hindi") {
-                    Spacer(modifier = Modifier.height(16.dp))
-                    AsyncImage(
-                        model = baseUrl + displayImg,
-                        contentDescription = "Question Image",
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .heightIn(max = 200.dp),
-                        contentScale = ContentScale.Fit
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(24.dp))
-
-                val optionsList = if (isHindi) currentQue.answer_hi else currentQue.answer_en
-                val optionsImgList =
-                    if (isHindi) currentQue.answer_img_hi else currentQue.answer_img_en
-
-                optionsList.forEachIndexed { index, optionText ->
-                    val optionId = currentQue.answers_id[index]
-                    val isSelected = answers[currentQue.id] == optionId
-
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 6.dp)
-                            .clickable { viewModel.selectAnswer(currentQue.id, optionId) }
-                            .border(
-                                width = if (isSelected) 2.dp else 1.dp,
-                                color = if (isSelected) MaterialTheme.colorScheme.primary else Color.LightGray,
-                                shape = RoundedCornerShape(8.dp)
-                            ),
-                        colors = CardDefaults.cardColors(
-                            containerColor = if (isSelected) MaterialTheme.colorScheme.primaryContainer.copy(
-                                alpha = 0.5f
-                            ) else Color.White
-                        )
-                    ) {
-                        Row(
-                            modifier = Modifier.padding(16.dp),
-                            verticalAlignment = Alignment.Top
-                        ) {
-
-                            Box(
-                                modifier = Modifier
-                                    .size(24.dp)
-                                    .clip(CircleShape)
-                                    .border(
-                                        2.dp,
-                                        if (isSelected) MaterialTheme.colorScheme.primary else Color.Gray,
-                                        CircleShape
-                                    ),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                if (isSelected) {
-                                    Icon(
-                                        Icons.Default.CheckCircle,
-                                        contentDescription = "Selected",
-                                        tint = MaterialTheme.colorScheme.primary,
-                                        modifier = Modifier.size(20.dp)
-                                    )
-                                }
-                            }
-
-                            Spacer(modifier = Modifier.width(16.dp))
-
-                            Column {
-
-                                val optImg = optionsImgList[index]
-                                if (!optImg.isNullOrEmpty() && optImg != "/config/image/option/" && optImg != "/config/image/option/image.hindi") {
-                                    AsyncImage(
-                                        model = baseUrl + optImg,
-                                        contentDescription = "Option Image",
-                                        modifier = Modifier.heightIn(max = 100.dp),
-                                        contentScale = ContentScale.Fit
-                                    )
-                                    Spacer(modifier = Modifier.height(8.dp))
-                                }
-
-                                Text(text = optionText, fontSize = 16.sp, color = Color.DarkGray)
-                            }
-                        }
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(32.dp))
-            }
-        }
     }
 }
+
+//    Scaffold(
+//        topBar = {
+//            Surface(
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .height(56.dp),
+//                color = Color.White,
+//                shadowElevation = 2.dp
+//            ) {
+//                Row(
+//                    modifier = Modifier
+//                        .fillMaxSize()
+//                        .padding(horizontal = 16.dp),
+//                    verticalAlignment = Alignment.CenterVertically
+//                ) {
+//
+//                    Row(
+//                        modifier = Modifier.weight(1f), // Takes up available space
+//                        verticalAlignment = Alignment.CenterVertically
+//                    ) {
+//                        Icon(
+//                            Icons.Default.Timer,
+//                            contentDescription = "Timer",
+//                            tint = MaterialTheme.colorScheme.error
+//                        )
+//                        Spacer(modifier = Modifier.width(8.dp))
+//                        Text(timeLeft, fontWeight = FontWeight.Bold, fontSize = 18.sp)
+//                    }
+//
+//                    TextButton(onClick = { isHindi = !isHindi }) {
+//                        Icon(Icons.Default.Language, contentDescription = "Language")
+//                        Spacer(modifier = Modifier.width(4.dp))
+//                        Text(if (isHindi) "ENG" else "हिं", fontWeight = FontWeight.Bold)
+//                    }
+//                }
+//            }
+//        },
+//        bottomBar = {
+//
+//            Surface(shadowElevation = 8.dp, color = Color.White) {
+//                Column {
+//                    Row(
+//                        modifier = Modifier
+//                            .fillMaxWidth()
+//                            .padding(horizontal = 8.dp, vertical = 8.dp),
+//                        horizontalArrangement = Arrangement.SpaceBetween
+//                    ) {
+//                        val isCurrentlyMarked = markedQuestions.contains(questions[currentIndex].id)
+//
+//                        TextButton(onClick = { viewModel.clearAnswer() }) {
+//                            Text("Clear Response", color = Color.Gray)
+//                        }
+//                        TextButton(onClick = { viewModel.toggleMarkForReview() }) {
+//                            Text(
+//                                if (isCurrentlyMarked) "Unmark" else "Mark for Review",
+//                                color = ColorMarked
+//                            )
+//                        }
+//                    }
+//                    HorizontalDivider()
+//                    Row(
+//                        modifier = Modifier
+//                            .fillMaxWidth()
+//                            .padding(8.dp),
+//                        horizontalArrangement = Arrangement.SpaceBetween,
+//                        verticalAlignment = Alignment.CenterVertically
+//                    ) {
+//                        Button(
+//                            onClick = { viewModel.previousQuestion() },
+//                            enabled = currentIndex > 0,
+//                            colors = ButtonDefaults.buttonColors(containerColor = Color.DarkGray)
+//                        ) {
+//                            Icon(
+//                                Icons.AutoMirrored.Filled.ArrowBack,
+//                                contentDescription = "Prev",
+//                                modifier = Modifier.size(18.dp)
+//                            )
+//                            Spacer(modifier = Modifier.width(4.dp))
+//                            Text("Prev")
+//                        }
+//
+//                        if (currentIndex == questions.size - 1) {
+//                            Button(
+//                                onClick = { showSubmitDialog = true }, // SHOW DIALOG HERE
+//                                colors = ButtonDefaults.buttonColors(containerColor = ColorAnswered)
+//                            ) {
+//                                Text("Submit Final")
+//                            }
+//                        } else {
+//                            Button(onClick = { viewModel.nextQuestion() }) {
+//                                Text("Save & Next")
+//                                Spacer(modifier = Modifier.width(4.dp))
+//                                Icon(
+//                                    Icons.AutoMirrored.Filled.ArrowForward,
+//                                    contentDescription = "Next",
+//                                    modifier = Modifier.size(18.dp)
+//                                )
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//    ) { paddingValues ->
+//
+//        Column(
+//            modifier = Modifier
+//                .fillMaxSize()
+//                .padding(top = 56.dp)
+//                .background(Color(0xFFF8F9FA))
+//        ) {
+//
+//            LazyRow(
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .background(Color.White)
+//                    .padding(vertical = 8.dp),
+//                contentPadding = PaddingValues(horizontal = 16.dp),
+//                horizontalArrangement = Arrangement.spacedBy(8.dp)
+//            ) {
+//                items(questions.size) { index ->
+//                    val qId = questions[index].id
+//                    val isCurrent = index == currentIndex
+//                    val isAns = answers.containsKey(qId) && answers[qId] != null
+//
+//                    val isMarked = markedQuestions.contains(qId)
+//                    val isVisited = visitedQuestions.contains(qId)
+//
+//                    val bgColor = when {
+//                        isAns && isMarked -> ColorAnsweredMarked // Blue
+//                        !isAns && isMarked -> ColorMarked // Purple
+//                        isAns -> ColorAnswered // Green
+//                        isCurrent -> ColorNotAnswered
+//                        isVisited -> ColorNotAnswered// Red
+//                        else -> ColorNotVisited // Gray
+//                    }
+//                    val textColor = if (bgColor == ColorNotVisited) Color.Black else Color.White
+//
+//                    Box(
+//                        modifier = Modifier
+//                            .size(36.dp)
+//                            .clip(CircleShape)
+//                            .background(bgColor)
+//                            .border(
+//                                width = if (isCurrent) 2.dp else 0.dp,
+//                                color = if (isCurrent) Color.Black else Color.Transparent,
+//                                shape = CircleShape
+//                            )
+//                            .clickable { viewModel.goToQuestion(index) },
+//                        contentAlignment = Alignment.Center
+//                    ) {
+//                        Text(
+//                            text = (index + 1).toString(),
+//                            color = textColor,
+//                            fontWeight = FontWeight.Bold,
+//                            fontSize = 14.sp
+//                        )
+//                    }
+//                }
+//            }
+//            HorizontalDivider()
+//
+//            Column(
+//                modifier = Modifier
+//                    .fillMaxSize()
+//                    .verticalScroll(rememberScrollState())
+//                    .padding(16.dp)
+//            ) {
+//
+//                Text(
+//                    text = "Question ${currentIndex + 1}",
+//                    color = MaterialTheme.colorScheme.primary,
+//                    fontWeight = FontWeight.Bold,
+//                    fontSize = 16.sp
+//                )
+//                Spacer(modifier = Modifier.height(12.dp))
+//
+//                val displayQuestion = if (isHindi) currentQue.que_hi else currentQue.que_En
+//                Text(
+//                    text = displayQuestion,
+//                    style = MaterialTheme.typography.titleLarge,
+//                    lineHeight = 28.sp,
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                        .wrapContentHeight()
+//                )
+//
+//                val displayImg = if (isHindi) currentQue.que_img_Hi else currentQue.que_img_En
+//                if (!displayImg.isNullOrEmpty() && displayImg != "/config/image/option/" && displayImg != "/config/image/option/image.hindi") {
+//                    Spacer(modifier = Modifier.height(16.dp))
+//                    AsyncImage(
+//                        model = baseUrl + displayImg,
+//                        contentDescription = "Question Image",
+//                        modifier = Modifier
+//                            .fillMaxWidth()
+//                            .heightIn(max = 200.dp),
+//                        contentScale = ContentScale.Fit
+//                    )
+//                }
+//
+//                Spacer(modifier = Modifier.height(24.dp))
+//
+//                val optionsList = if (isHindi) currentQue.answer_hi else currentQue.answer_en
+//                val optionsImgList =
+//                    if (isHindi) currentQue.answer_img_hi else currentQue.answer_img_en
+//
+//                optionsList.forEachIndexed { index, optionText ->
+//                    val optionId = currentQue.answers_id[index]
+//                    val isSelected = answers[currentQue.id] == optionId
+//
+//                    Card(
+//                        modifier = Modifier
+//                            .fillMaxWidth()
+//                            .padding(vertical = 6.dp)
+//                            .clickable { viewModel.selectAnswer(currentQue.id, optionId) }
+//                            .border(
+//                                width = if (isSelected) 2.dp else 1.dp,
+//                                color = if (isSelected) MaterialTheme.colorScheme.primary else Color.LightGray,
+//                                shape = RoundedCornerShape(8.dp)
+//                            ),
+//                        colors = CardDefaults.cardColors(
+//                            containerColor = if (isSelected) MaterialTheme.colorScheme.primaryContainer.copy(
+//                                alpha = 0.5f
+//                            ) else Color.White
+//                        )
+//                    ) {
+//                        Row(
+//                            modifier = Modifier.padding(16.dp),
+//                            verticalAlignment = Alignment.Top
+//                        ) {
+//
+//                            Box(
+//                                modifier = Modifier
+//                                    .size(24.dp)
+//                                    .clip(CircleShape)
+//                                    .border(
+//                                        2.dp,
+//                                        if (isSelected) MaterialTheme.colorScheme.primary else Color.Gray,
+//                                        CircleShape
+//                                    ),
+//                                contentAlignment = Alignment.Center
+//                            ) {
+//                                if (isSelected) {
+//                                    Icon(
+//                                        Icons.Default.CheckCircle,
+//                                        contentDescription = "Selected",
+//                                        tint = MaterialTheme.colorScheme.primary,
+//                                        modifier = Modifier.size(20.dp)
+//                                    )
+//                                }
+//                            }
+//
+//                            Spacer(modifier = Modifier.width(16.dp))
+//
+//                            Column {
+//
+//                                val optImg = optionsImgList[index]
+//                                if (!optImg.isNullOrEmpty() && optImg != "/config/image/option/" && optImg != "/config/image/option/image.hindi") {
+//                                    AsyncImage(
+//                                        model = baseUrl + optImg,
+//                                        contentDescription = "Option Image",
+//                                        modifier = Modifier.heightIn(max = 100.dp),
+//                                        contentScale = ContentScale.Fit
+//                                    )
+//                                    Spacer(modifier = Modifier.height(8.dp))
+//                                }
+//
+//                                Text(text = optionText, fontSize = 16.sp, color = Color.DarkGray)
+//                            }
+//                        }
+//                    }
+//                }
+//
+//                Spacer(modifier = Modifier.height(32.dp))
+//            }
+//        }
+//    }

@@ -35,6 +35,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.chandan.apnaacoaching.ui.components.ImageCarousel
 import com.chandan.apnaacoaching.ui.components.LatestUpdatesSection
 import com.chandan.apnaacoaching.ui.components.StudyGroupsGrid
@@ -46,6 +47,7 @@ import kotlin.time.Duration.Companion.milliseconds
 fun HomeScreen(
     userName: String,
     uiState: DashboardState,
+    navController: NavController,
     onRetry: () -> Unit
 ) {
     var showWelcomeBanner by remember { mutableStateOf(true) }
@@ -130,7 +132,10 @@ fun HomeScreen(
                         )
                     }
                     AnimatedVisibility(visible = isStudyGroupsExpanded) {
-                        StudyGroupsGrid(groups = dashboardData.studyGroups)
+                        StudyGroupsGrid(
+                            groups = dashboardData.studyGroups,
+                            navController = navController
+                        )
                     }
                 }
 

@@ -24,12 +24,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.chandan.apnaacoaching.data.StudyGroup
 
 @Composable
-fun StudyGroupsGrid(groups: List<StudyGroup>) {
+fun StudyGroupsGrid(groups: List<StudyGroup>, navController: NavController) {
 
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         groups.chunked(2).forEach { rowItems ->
@@ -43,7 +44,10 @@ fun StudyGroupsGrid(groups: List<StudyGroup>) {
                         title = item.title,
                         imageUrl = item.imageUrl,
                         description = item.description,
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.weight(1f),
+                        onClick = {
+                            navController.navigate("level_screen/${item.id}")
+                        }
                     )
                 }
 
@@ -60,12 +64,13 @@ fun SubjectCard(
     title: String,
     imageUrl: String,
     description: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
 ) {
     ElevatedCard(
         modifier = modifier
             .height(140.dp)
-            .clickable { },
+            .clickable { onClick() },
         shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.elevatedCardElevation(defaultElevation = 4.dp)
     ) {

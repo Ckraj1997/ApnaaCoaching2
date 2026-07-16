@@ -17,13 +17,20 @@ import com.chandan.apnaacoaching.ui.PracticeScreen
 import com.chandan.apnaacoaching.ui.PracticeViewModel
 import com.chandan.apnaacoaching.ui.ProfileScreen
 import com.chandan.apnaacoaching.ui.ProfileViewModel
+import com.chandan.apnaacoaching.ui.categories.CategoryScreen
+import com.chandan.apnaacoaching.ui.categories.CategoryViewModel
 import com.chandan.apnaacoaching.ui.components.TestListScreen
+import com.chandan.apnaacoaching.ui.levels.LevelScreen
+import com.chandan.apnaacoaching.ui.levels.LevelViewModel
 import com.chandan.apnaacoaching.ui.quiz.DetailedResultScreen
 import com.chandan.apnaacoaching.ui.quiz.InstructionsScreen
 import com.chandan.apnaacoaching.ui.quiz.QuizScreen
 import com.chandan.apnaacoaching.ui.quiz.QuizViewModel
 import com.chandan.apnaacoaching.ui.quiz.ResultScreen
 import com.chandan.apnaacoaching.ui.quiz.ResultViewModel
+import com.chandan.apnaacoaching.ui.studymaterial.StudyMaterialScreen
+import com.chandan.apnaacoaching.ui.studymaterial.oneliner.OneLinerScreen
+import com.chandan.apnaacoaching.ui.studymaterial.oneliner.OneLinerViewModel
 
 @Composable
 fun DashboardNavGraph(
@@ -48,7 +55,8 @@ fun DashboardNavGraph(
             HomeScreen(
                 userName = userName,
                 uiState = uiState,
-                onRetry = onRetry
+                onRetry = onRetry,
+                navController = navController,
             )
         }
 
@@ -163,6 +171,66 @@ fun DashboardNavGraph(
                 quizId = quizId,
                 userId = routeUserId,
                 viewModel = resultViewModel,
+                navController = navController
+            )
+        }
+
+        composable("level_screen/{groupId}") { backStackEntry ->
+            val groupId = backStackEntry.arguments?.getString("groupId") ?: "0"
+            val levelViewModel: LevelViewModel = viewModel()
+
+            LevelScreen(
+                groupId = groupId,
+                viewModel = levelViewModel,
+                navController = navController
+            )
+        }
+
+        // Inside your NavHost block...
+        composable("category_screen/{groupId}/{levelId}") { backStackEntry ->
+            val groupId = backStackEntry.arguments?.getString("groupId") ?: "0"
+            val levelId = backStackEntry.arguments?.getString("levelId") ?: "0"
+            val categoryViewModel: CategoryViewModel = viewModel()
+
+            CategoryScreen(
+                groupId = groupId,
+                levelId = levelId,
+                viewModel = categoryViewModel,
+                navController = navController
+            )
+        }
+
+        // --- ADD THIS INSIDE YOUR NavHost ---
+        composable("study_material_screen/{groupId}/{levelId}/{categoryId}") { backStackEntry ->
+            // Extract the IDs from the route
+            val groupId = backStackEntry.arguments?.getString("groupId") ?: "0"
+            val levelId = backStackEntry.arguments?.getString("levelId") ?: "0"
+            val categoryId = backStackEntry.arguments?.getString("categoryId") ?: "0"
+
+            // Call the screen
+            StudyMaterialScreen(
+                groupId = groupId,
+                levelId = levelId,
+                categoryId = categoryId,
+                navController = navController
+            )
+        }
+
+        // The new One-Liner Route
+        composable("one_liner_screen/{groupId}/{levelId}/{categoryId}") { backStackEntry ->
+
+            // 1. Extract the IDs from the route
+            val groupId = backStackEntry.arguments?.getString("groupId") ?: ""
+            val levelId = backStackEntry.arguments?.getString("levelId") ?: ""
+            val categoryId = backStackEntry.arguments?.getString("categoryId") ?: ""
+
+            // 2. Pass them to the screen (assuming you instantiate your ViewModel here)
+            val oneLinerViewModel: OneLinerViewModel = viewModel() // or hiltViewModel()
+            OneLinerScreen(
+                groupId = groupId,
+                levelId = levelId,
+                catId = categoryId,
+                viewModel = oneLinerViewModel,
                 navController = navController
             )
         }

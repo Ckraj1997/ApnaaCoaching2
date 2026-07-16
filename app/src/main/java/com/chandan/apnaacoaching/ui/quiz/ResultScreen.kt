@@ -59,10 +59,10 @@ fun ResultScreen(
     ) { paddingValues ->
         Column(
             modifier = Modifier
-             .fillMaxSize()
-             .padding(paddingValues)
-             .padding(16.dp)
-             .background(Color(0xFFF8F9FA)),
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(16.dp)
+                .background(Color(0xFFF8F9FA)),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
@@ -155,8 +155,8 @@ fun ResultScreen(
                     }
                 },
                 modifier = Modifier
-                 .fillMaxWidth()
-                 .height(50.dp)
+                    .fillMaxWidth()
+                    .height(50.dp)
             ) {
                 Icon(Icons.Default.Home, contentDescription = "Home")
                 Spacer(modifier = Modifier.width(8.dp))

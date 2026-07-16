@@ -16,7 +16,7 @@ suspend fun triggerGoogleSignIn(context: Context): String? {
     val googleIdOption: GetGoogleIdOption = GetGoogleIdOption.Builder()
         .setFilterByAuthorizedAccounts(false)
         .setServerClientId(webClientId)
-        .setAutoSelectEnabled(true)
+        .setAutoSelectEnabled(false)
         .build()
     val request: GetCredentialRequest = GetCredentialRequest.Builder()
         .addCredentialOption(googleIdOption)
