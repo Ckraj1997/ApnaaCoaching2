@@ -108,4 +108,8 @@ dependencies {
     implementation(libs.androidx.credentials)
     implementation(libs.androidx.credentials.play.services.auth)
     implementation(libs.googleid)
+
+    implementation(libs.youtube.player.core)
+//    implementation(libs.android.pdf.viewer)
+    implementation(libs.bouquet.viewer)
 }

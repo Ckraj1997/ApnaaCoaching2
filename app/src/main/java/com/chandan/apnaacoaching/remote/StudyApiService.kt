@@ -1,8 +1,11 @@
 package com.chandan.apnaacoaching.remote
 
 import com.chandan.apnaacoaching.data.OneLinerResponse
+import com.chandan.apnaacoaching.data.PdfResponse
 import com.chandan.apnaacoaching.data.QuizListResponse
 import com.chandan.apnaacoaching.data.SubjectiveResponse
+import com.chandan.apnaacoaching.data.UpdateResponse
+import com.chandan.apnaacoaching.data.VideoResponse
 import retrofit2.http.GET
 import retrofit2.http.Query
 
@@ -30,4 +33,25 @@ interface StudyApiService {
         @Query("level_id") levelId: String,
         @Query("group_id") groupId: String
     ): QuizListResponse
+
+    @GET("get_videos.php")
+    suspend fun getVideos(
+        @Query("group_id") groupId: String,
+        @Query("level_id") levelId: String,
+        @Query("cat_id") catId: String
+    ): VideoResponse
+
+    @GET("get_pdfs.php") // Ensure this matches your actual PHP filename
+    suspend fun getPdfs(
+        @Query("group_id") groupId: String,
+        @Query("level_id") levelId: String,
+        @Query("cat_id") catId: String
+    ): PdfResponse
+
+    @GET("get_updates.php")
+    suspend fun getUpdates(
+        @Query("group_id") groupId: String,
+        @Query("level_id") levelId: String,
+        @Query("cat_id") catId: String
+    ): UpdateResponse
 }

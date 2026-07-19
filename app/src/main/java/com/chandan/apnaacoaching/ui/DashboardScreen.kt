@@ -1,11 +1,16 @@
 package com.chandan.apnaacoaching.ui
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
+import androidx.compose.material.icons.filled.Brightness2
+import androidx.compose.material.icons.filled.Brightness5
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.DrawerValue
@@ -16,29 +21,34 @@ import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.chandan.apnaacoaching.navigation.DashboardNavGraph
 import com.chandan.apnaacoaching.navigation.Screen
 import com.chandan.apnaacoaching.ui.components.DashboardBottomNav
 import com.chandan.apnaacoaching.ui.components.DashboardTopBar
+import com.chandan.apnaacoaching.ui.theme.ThemeViewModel
 import kotlinx.coroutines.launch
 
 @Composable
 fun DashboardScreen(
     userName: String,
     userId: String,
-    viewModel: DashboardViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
+    viewModel: DashboardViewModel = viewModel(),
+    themeViewModel: ThemeViewModel = viewModel()
 ) {
 
     val navController = rememberNavController()
@@ -53,6 +63,10 @@ fun DashboardScreen(
     val hideBottomBar = currentRoute?.startsWith("instructions") == true ||
             currentRoute?.startsWith("quiz_screen") == true ||
             currentRoute?.startsWith("result_screen") == true
+
+
+    val isDark by themeViewModel.isDarkMode.collectAsState()
+
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -95,6 +109,31 @@ fun DashboardScreen(
                     label = { Text("Logout") },
                     selected = false,
                     onClick = { /* TODO: Trigger Logout ViewModel */ },
+                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
+                )
+
+                NavigationDrawerItem(
+                    icon = {
+                        Icon(
+                            imageVector = if (isDark) Icons.Default.Brightness2 else Icons.Default.Brightness5,
+                            contentDescription = "Theme Toggle"
+                        )
+                    },
+                    label = {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(text = if (isDark) "Dark Mode" else "Light Mode")
+                            Switch(
+                                checked = isDark,
+                                onCheckedChange = { themeViewModel.toggleTheme(it) }
+                            )
+                        }
+                    },
+                    selected = false,
+                    onClick = { themeViewModel.toggleTheme(!isDark) }, // Toggle on click too
                     modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
                 )
             }

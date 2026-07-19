@@ -53,7 +53,7 @@ fun ResultScreen(
         topBar = {
             TopAppBar(
                 title = { Text("Exam Summary", fontWeight = FontWeight.Bold) },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White)
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface)
             )
         }
     ) { paddingValues ->
@@ -62,7 +62,7 @@ fun ResultScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
                 .padding(16.dp)
-                .background(Color(0xFFF8F9FA)),
+                .background(MaterialTheme.colorScheme.surface),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
@@ -80,13 +80,13 @@ fun ResultScreen(
                     text = "Test Submitted Successfully!",
                     style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.Bold,
-                    color = Color.DarkGray
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = "This is a Live Test. Results and ranks will be declared on:",
                     textAlign = TextAlign.Center,
-                    color = Color.Gray
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 Card(
@@ -109,7 +109,7 @@ fun ResultScreen(
                 Text(
                     text = "Your Score",
                     fontSize = 20.sp,
-                    color = Color.Gray
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                 )
                 Text(
                     text = "$score / $totalQuestions",
@@ -170,7 +170,7 @@ fun ResultScreen(
 fun ResultStatCard(title: String, value: String, color: Color, icon: ImageVector) {
     Card(
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         modifier = Modifier.width(100.dp)
     ) {
@@ -184,10 +184,10 @@ fun ResultStatCard(title: String, value: String, color: Color, icon: ImageVector
                 text = value,
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color.DarkGray
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             Spacer(modifier = Modifier.height(4.dp))
-            Text(text = title, fontSize = 12.sp, color = Color.Gray)
+            Text(text = title, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f))
         }
     }
 }

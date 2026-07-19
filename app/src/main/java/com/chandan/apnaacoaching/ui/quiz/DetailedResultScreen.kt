@@ -72,12 +72,12 @@ fun DetailedResultScreen(
         topBar = {
             TopAppBar(
                 title = { Text("Exam Report", fontWeight = FontWeight.Bold) },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White)
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface)
             )
         },
         bottomBar = {
 
-            Surface(shadowElevation = 8.dp, color = Color.White) {
+            Surface(shadowElevation = 8.dp, color = MaterialTheme.colorScheme.surface) {
                 Button(
                     onClick = exitToDashboard,
                     modifier = Modifier
@@ -94,7 +94,7 @@ fun DetailedResultScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .background(Color(0xFFF8F9FA))
+                .background(MaterialTheme.colorScheme.surface)
         ) {
             when (val state = uiState) {
                 is ResultUiState.Loading -> {
@@ -116,7 +116,7 @@ fun DetailedResultScreen(
                     ) {
                         Text("Results Awaiting", style = MaterialTheme.typography.headlineMedium)
                         Spacer(modifier = Modifier.height(8.dp))
-                        Text("Will be released at: ${state.releaseTime}", color = Color.Gray)
+                        Text("Will be released at: ${state.releaseTime}", color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f))
                     }
                 }
 
@@ -125,7 +125,7 @@ fun DetailedResultScreen(
 
                         TabRow(
                             selectedTabIndex = selectedTabIndex,
-                            containerColor = Color.White,
+                            containerColor = MaterialTheme.colorScheme.surface,
                             contentColor = MaterialTheme.colorScheme.primary
                         ) {
                             tabs.forEachIndexed { index, title ->

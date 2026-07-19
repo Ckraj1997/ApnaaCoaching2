@@ -10,56 +10,40 @@ import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
-private val DarkColorScheme = darkColorScheme(
-    primary = PrimaryBlueDark,
-    secondary = SecondaryBlueDark,
-    tertiary = AccentOrangeDark,
-    background = BackgroundDark,
-    surface = SurfaceDark,
-    error = ErrorRed
-)
-private val LightColorScheme = lightColorScheme(
+val LightColors = lightColorScheme(
     primary = PrimaryBlue,
-    secondary = SecondaryBlue,
-    tertiary = AccentOrange,
-    background = BackgroundLight,
-    surface = SurfaceLight,
-    error = ErrorRed
+    onPrimary = Color.White,
+    background = WhiteOff, // Uses our soft off-white
+    onBackground = Color.Black,
+    surface = Color.White,
+    onSurface = Color.Black
 )
 
-@Suppress("DEPRECATION")
+val DarkColors = darkColorScheme(
+    primary = PrimaryBlueDark,
+    onPrimary = Color.White,
+    background = Charcoal, // Uses our soft charcoal
+    onBackground = WhiteOff,
+    surface = Color(0xFF2D2D2D), // Slightly lighter than background for depth
+    onSurface = WhiteOff
+)
+
 @Composable
 fun ApnaaCoachingTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
-
-    dynamicColor: Boolean = true,
+    darkTheme: Boolean,
     content: @Composable () -> Unit
 ) {
-    val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-        }
+    val colorScheme = if (darkTheme) DarkColors else LightColors
 
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
-    }
-    val view = LocalView.current
-    if (!view.isInEditMode) {
-        SideEffect {
-            val window = (view.context as Activity).window
-            window.statusBarColor = colorScheme.primary.toArgb()
-            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
-        }
-    }
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = Typography,
+        typography = Typography, // Your existing typography
         content = content
     )
 }

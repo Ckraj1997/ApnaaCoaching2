@@ -3,10 +3,17 @@ package com.chandan.apnaacoaching.ui.components
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.automirrored.outlined.List
+import androidx.compose.material.icons.filled.Assessment
+import androidx.compose.material.icons.filled.ChatBubble
+import androidx.compose.material.icons.filled.Checklist
+import androidx.compose.material.icons.filled.Forum
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.PendingActions
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.icons.outlined.Assessment
+import androidx.compose.material.icons.outlined.ChatBubbleOutline
+import androidx.compose.material.icons.outlined.Forum
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.PendingActions
 import androidx.compose.material.icons.outlined.Person
@@ -30,21 +37,21 @@ fun DashboardBottomNav(
 ) {
     val items = listOf(
         Screen.Practice to "Practice",
-        Screen.Cart to "My Cart",
+        Screen.Community to "Community",
         Screen.Home to "Home",
         Screen.Content to "My Content",
         Screen.Account to "Account"
     )
     val selectedIcons = listOf(
-        Icons.Filled.PendingActions,
-        Icons.Filled.ShoppingCart,
+        Icons.Filled.Assessment,
+        Icons.Filled.Forum,
         Icons.Filled.Home,
         Icons.AutoMirrored.Filled.List,
         Icons.Filled.Person
     )
     val unselectedIcons = listOf(
-        Icons.Outlined.PendingActions,
-        Icons.Outlined.ShoppingCart,
+        Icons.Outlined.Assessment,
+        Icons.Outlined.Forum,
         Icons.Outlined.Home,
         Icons.AutoMirrored.Outlined.List,
         Icons.Outlined.Person

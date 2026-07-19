@@ -146,11 +146,11 @@ fun StudyMaterialScreen(
                             }
 
                             "pdf" -> {
-//                                navController.navigate("pdf_screen/$groupId/$levelId/$categoryId")
+                                navController.navigate("pdf_screen/$groupId/$levelId/$categoryId")
                             }
 
                             "video" -> {
-//                                navController.navigate("video_screen/$groupId/$levelId/$categoryId")
+                                navController.navigate("video_screen/$groupId/$levelId/$categoryId")
                             }
 
                             "quiz" -> {
@@ -158,7 +158,7 @@ fun StudyMaterialScreen(
                             }
 
                             "update" -> {
-//                                navController.navigate("current_affairs_screen/$groupId/$levelId/$categoryId")
+                                navController.navigate("update_screen/$groupId/$levelId/$categoryId")
                             }
                         }
                     }

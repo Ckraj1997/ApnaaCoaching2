@@ -90,7 +90,7 @@ fun InstructionsScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp), // Standard app bar height
-                color = Color.White,
+                color = MaterialTheme.colorScheme.surface,
                 shadowElevation = 2.dp // Adds a nice subtle shadow below the bar
             ) {
                 Row(
@@ -121,7 +121,7 @@ fun InstructionsScreen(
             }
         },
         bottomBar = {
-            Surface(shadowElevation = 8.dp, color = Color.White) {
+            Surface(shadowElevation = 8.dp, color = MaterialTheme.colorScheme.surface) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -134,7 +134,7 @@ fun InstructionsScreen(
                         Text(
                             text = if (isHindi) "मैंने निर्देश पढ़ लिए हैं और सहमत हूँ।" else "I have read and understood the instructions.",
                             style = MaterialTheme.typography.bodyMedium,
-                            color = Color.DarkGray
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                     Button(
@@ -208,31 +208,31 @@ fun InstructionsScreen(
                 ColorNotVisited,
                 "1",
                 if (isHindi) "आप अभी तक प्रश्न पर नहीं गए हैं।" else "You have not visited the question yet.",
-                Color.Black
+                MaterialTheme.colorScheme.onBackground
             )
             LegendItem(
                 ColorNotAnswered,
                 "2",
                 if (isHindi) "आपने प्रश्न का उत्तर नहीं दिया है।" else "You have not answered the question.",
-                Color.White
+                MaterialTheme.colorScheme.surface
             )
             LegendItem(
                 ColorAnswered,
                 "3",
                 if (isHindi) "आप प्रश्न का उत्तर दे चुके हैं।" else "You have answered the question.",
-                Color.White
+                MaterialTheme.colorScheme.surface
             )
             LegendItem(
                 ColorMarked,
                 "4",
                 if (isHindi) "पुनर्विचार के लिए चिन्हित।" else "Marked for review.",
-                Color.White
+                MaterialTheme.colorScheme.surface
             )
             LegendItem(
                 ColorAnsweredMarked,
                 "5",
                 if (isHindi) "उत्तर दिया गया है और समीक्षा के लिए चिन्हित।" else "Answered and Marked for Review.",
-                Color.White
+                MaterialTheme.colorScheme.surface
             )
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -264,7 +264,7 @@ fun LegendItem(color: Color, number: String, text: String, textColor: Color) {
             modifier = Modifier
                 .size(32.dp)
                 .background(color, RoundedCornerShape(4.dp))
-                .border(1.dp, Color.Gray, RoundedCornerShape(4.dp))
+                .border(1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f), RoundedCornerShape(4.dp))
         ) {
             Text(text, color = textColor, fontWeight = FontWeight.Bold)
         }

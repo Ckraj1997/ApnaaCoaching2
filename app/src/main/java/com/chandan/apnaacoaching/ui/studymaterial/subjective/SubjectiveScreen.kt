@@ -38,8 +38,8 @@ fun SubjectiveScreen(
     val isHindi by viewModel.isHindi.collectAsState()
     val revealedAnswers by viewModel.revealedAnswers.collectAsState()
 
-    val questionBaseUrl = "https://apnaacoaching.in/config/image/question/"
-    val answerBaseUrl = "https://apnaacoaching.in/config/image/answer/"
+    val questionBaseUrl = "https://apnaacoaching.in/config/image/subjective/"
+    val answerBaseUrl = "https://apnaacoaching.in/config/image/subjective/"
 
     LaunchedEffect(groupId, levelId, catId) {
         viewModel.fetchQuestions(groupId, levelId, catId)
@@ -118,7 +118,6 @@ fun SubjectiveScreen(
         }
     }
 }
-
 @Composable
 fun SubjectiveCard(
     question: SubjectiveQuestion,
@@ -137,7 +136,8 @@ fun SubjectiveCard(
         Column(modifier = Modifier.padding(16.dp).fillMaxWidth()) {
 
             // --- 1. QUESTION TEXT ---
-            val qText = if (isHindi) question.question_hi else question.question
+            // Fallback to English text if Hindi text is null/empty
+            val qText = if (isHindi && !question.question_hi.isNullOrEmpty()) question.question_hi else question.question
             Text(
                 text = "Q. ${qText ?: ""}",
                 fontWeight = FontWeight.Bold,
@@ -147,11 +147,16 @@ fun SubjectiveCard(
             )
 
             // --- 2. QUESTION IMAGE ---
-            val qImg = if (isHindi) question.question_img_hi else question.question_img
-            if (!qImg.isNullOrEmpty() && qImg != "image.hindi" && qImg != "question.image") {
+            // Fallback to English image if Hindi image is null/empty
+            val rawQImg = if (isHindi && !question.question_img_hi.isNullOrEmpty()) question.question_img_hi else question.question_img
+
+            if (!rawQImg.isNullOrEmpty() && rawQImg != "image.hindi" && rawQImg != "question.image") {
+                // FIX: Replace physical spaces with URL-friendly %20
+                val safeQImg = rawQImg.replace(" ", "%20")
+
                 Spacer(modifier = Modifier.height(12.dp))
                 AsyncImage(
-                    model = questionBaseUrl + qImg,
+                    model = questionBaseUrl + safeQImg,
                     contentDescription = "Question Image",
                     modifier = Modifier.fillMaxWidth().heightIn(max = 200.dp),
                     contentScale = ContentScale.Fit
@@ -189,8 +194,8 @@ fun SubjectiveCard(
                 HorizontalDivider(color = Color(0xFFEEEEEE))
                 Spacer(modifier = Modifier.height(12.dp))
 
-                // Answer Text
-                val aText = if (isHindi) question.answer_hi else question.answer
+                // Answer Text (with fallback)
+                val aText = if (isHindi && !question.answer_hi.isNullOrEmpty()) question.answer_hi else question.answer
                 Text(
                     text = aText ?: "",
                     color = Color.DarkGray,
@@ -198,12 +203,16 @@ fun SubjectiveCard(
                     lineHeight = 22.sp
                 )
 
-                // Answer Image
-                val aImg = if (isHindi) question.answer_img_hi else question.answer_img
-                if (!aImg.isNullOrEmpty() && aImg != "image.hindi" && aImg != "answer.image") {
+                // Answer Image (with fallback)
+                val rawAImg = if (isHindi && !question.answer_img_hi.isNullOrEmpty()) question.answer_img_hi else question.answer_img
+
+                if (!rawAImg.isNullOrEmpty() && rawAImg != "image.hindi" && rawAImg != "answer.image") {
+                    // FIX: Replace physical spaces with URL-friendly %20
+                    val safeAImg = rawAImg.replace(" ", "%20")
+
                     Spacer(modifier = Modifier.height(12.dp))
                     AsyncImage(
-                        model = answerBaseUrl + aImg,
+                        model = answerBaseUrl + safeAImg,
                         contentDescription = "Answer Image",
                         modifier = Modifier.fillMaxWidth().heightIn(max = 200.dp),
                         contentScale = ContentScale.Fit

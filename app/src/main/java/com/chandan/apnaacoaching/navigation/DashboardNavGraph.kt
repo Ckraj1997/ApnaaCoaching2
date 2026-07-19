@@ -19,6 +19,12 @@ import com.chandan.apnaacoaching.ui.ProfileScreen
 import com.chandan.apnaacoaching.ui.ProfileViewModel
 import com.chandan.apnaacoaching.ui.categories.CategoryScreen
 import com.chandan.apnaacoaching.ui.categories.CategoryViewModel
+import com.chandan.apnaacoaching.ui.community.CommentsScreen
+import com.chandan.apnaacoaching.ui.community.CommunityGroupsScreen
+import com.chandan.apnaacoaching.ui.community.CommunityThreadsScreen
+import com.chandan.apnaacoaching.ui.community.CommunityViewModel
+import com.chandan.apnaacoaching.ui.community.CreateThreadScreen
+import com.chandan.apnaacoaching.ui.community.ThreadRepliesScreen
 import com.chandan.apnaacoaching.ui.components.TestListScreen
 import com.chandan.apnaacoaching.ui.levels.LevelScreen
 import com.chandan.apnaacoaching.ui.levels.LevelViewModel
@@ -31,10 +37,18 @@ import com.chandan.apnaacoaching.ui.quiz.ResultViewModel
 import com.chandan.apnaacoaching.ui.studymaterial.StudyMaterialScreen
 import com.chandan.apnaacoaching.ui.studymaterial.oneliner.OneLinerScreen
 import com.chandan.apnaacoaching.ui.studymaterial.oneliner.OneLinerViewModel
+import com.chandan.apnaacoaching.ui.studymaterial.pdf.PdfPlayerScreen
+import com.chandan.apnaacoaching.ui.studymaterial.pdf.PdfScreen
+import com.chandan.apnaacoaching.ui.studymaterial.pdf.PdfViewModel
 import com.chandan.apnaacoaching.ui.studymaterial.quiz.QuizListScreen
 import com.chandan.apnaacoaching.ui.studymaterial.quiz.QuizListViewModel
 import com.chandan.apnaacoaching.ui.studymaterial.subjective.SubjectiveScreen
 import com.chandan.apnaacoaching.ui.studymaterial.subjective.SubjectiveViewModel
+import com.chandan.apnaacoaching.ui.studymaterial.update.UpdateScreen
+import com.chandan.apnaacoaching.ui.studymaterial.update.UpdateViewModel
+import com.chandan.apnaacoaching.ui.studymaterial.video.VideoPlayerScreen
+import com.chandan.apnaacoaching.ui.studymaterial.video.VideoScreen
+import com.chandan.apnaacoaching.ui.studymaterial.video.VideoViewModel
 
 @Composable
 fun DashboardNavGraph(
@@ -64,8 +78,14 @@ fun DashboardNavGraph(
             )
         }
 
-        composable(Screen.Cart.route) {
-            ComingSoonScreen(featureName = "My Cart")
+        composable(Screen.Community.route) {
+            // Initialize the ViewModel here or pass it if you are using Hilt/Dagger
+            val communityViewModel: CommunityViewModel = viewModel()
+
+            CommunityGroupsScreen(
+                navController = navController,
+                viewModel = communityViewModel
+            )
         }
         composable(Screen.Content.route) {
             ComingSoonScreen(featureName = "My Content")
@@ -267,6 +287,127 @@ fun DashboardNavGraph(
                 viewModel = quizListViewModel, // pass your initialized viewmodel here
                 navController = navController,
                 userId = userId
+            )
+        }
+
+        composable("video_screen/{groupId}/{levelId}/{categoryId}") { backStackEntry ->
+            val groupId = backStackEntry.arguments?.getString("groupId") ?: ""
+            val levelId = backStackEntry.arguments?.getString("levelId") ?: ""
+            val categoryId = backStackEntry.arguments?.getString("categoryId") ?: ""
+
+             val videoViewModel: VideoViewModel = viewModel()
+            VideoScreen(
+                groupId = groupId,
+                levelId = levelId,
+                catId = categoryId,
+                viewModel = videoViewModel,
+                navController = navController
+            )
+        }
+
+        composable("pdf_screen/{groupId}/{levelId}/{categoryId}") { backStackEntry ->
+            val groupId = backStackEntry.arguments?.getString("groupId") ?: ""
+            val levelId = backStackEntry.arguments?.getString("levelId") ?: ""
+            val categoryId = backStackEntry.arguments?.getString("categoryId") ?: ""
+
+             val pdfViewModel: PdfViewModel = viewModel()
+            PdfScreen(
+                groupId = groupId,
+                levelId = levelId,
+                catId = categoryId,
+                viewModel = pdfViewModel,
+                navController = navController
+            )
+        }
+
+        composable("update_screen/{groupId}/{levelId}/{categoryId}") { backStackEntry ->
+            val groupId = backStackEntry.arguments?.getString("groupId") ?: ""
+            val levelId = backStackEntry.arguments?.getString("levelId") ?: ""
+            val categoryId = backStackEntry.arguments?.getString("categoryId") ?: ""
+
+             val updateViewModel: UpdateViewModel = viewModel()
+            UpdateScreen(
+                groupId = groupId,
+                levelId = levelId,
+                catId = categoryId,
+                viewModel = updateViewModel,
+                navController = navController
+            )
+        }
+
+//        composable("video_player_screen/{encodedUrl}") { backStackEntry ->
+//            val encodedUrl = backStackEntry.arguments?.getString("encodedUrl") ?: ""
+//
+//            VideoPlayerScreen(
+//                encodedUrl = encodedUrl,
+//                navController = navController
+//            )
+//        }
+
+        composable("video_player_screen/{videoId}") { backStackEntry ->
+            val videoId = backStackEntry.arguments?.getString("videoId") ?: ""
+
+            VideoPlayerScreen(
+                videoId = videoId, // Passing the clean ID directly
+                navController = navController
+            )
+        }
+
+        composable("pdf_player_screen/{encodedUrl}/{pdfTitle}") { backStackEntry ->
+            val encodedUrl = backStackEntry.arguments?.getString("encodedUrl") ?: ""
+            val pdfTitle = backStackEntry.arguments?.getString("pdfTitle") ?: "Document"
+
+            PdfPlayerScreen(
+                encodedUrl = encodedUrl,
+                pdfTitle = pdfTitle,
+                navController = navController
+            )
+        }
+
+        composable("create_thread_screen/{groupId}") { backStackEntry ->
+            val groupId = backStackEntry.arguments?.getString("groupId") ?: ""
+            val communityViewModel: CommunityViewModel = viewModel()
+            CreateThreadScreen(groupId = groupId, userId = userId, navController = navController, viewModel = communityViewModel)
+        }
+
+        composable("replies_screen/{threadId}") { backStackEntry ->
+            val threadId = backStackEntry.arguments?.getString("threadId") ?: ""
+            val communityViewModel: CommunityViewModel = viewModel()
+            ThreadRepliesScreen(threadId = threadId, userId = userId, navController = navController, viewModel = communityViewModel)
+        }
+
+        // 1. The Entry Point (Groups Screen)
+        composable("community_groups_screen") {
+            val communityViewModel: CommunityViewModel = viewModel()
+            CommunityGroupsScreen(
+                navController = navController,
+                viewModel = communityViewModel
+            )
+        }
+
+        // 2. The Threads Screen (Update your existing composable to match this name)
+        composable("community_threads_screen/{groupId}") { backStackEntry ->
+            val groupId = backStackEntry.arguments?.getString("groupId") ?: ""
+            val communityViewModel: CommunityViewModel = viewModel()
+
+            CommunityThreadsScreen(
+                groupId = groupId,
+                navController = navController,
+                viewModel = communityViewModel
+            )
+        }
+
+        composable("comments_screen/{threadId}/{replyId}") { backStackEntry ->
+            val threadId = backStackEntry.arguments?.getString("threadId") ?: ""
+            val replyId = backStackEntry.arguments?.getString("replyId") ?: ""
+            val communityViewModel: CommunityViewModel = viewModel()
+
+            CommentsScreen(
+                threadId = threadId,
+                replyId = replyId,
+                userId = userId,
+                navController = navController,
+                viewModel = communityViewModel
             )
         }
     }

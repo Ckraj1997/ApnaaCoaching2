@@ -2,14 +2,16 @@ package com.chandan.apnaacoaching.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val PrimaryBlue = Color(0xFF1A73E8)
-val SecondaryBlue = Color(0xFFE8F0FE)
-val AccentOrange = Color(0xFFF9AB00)
-val PrimaryBlueDark = Color(0xFF8AB4F8)
-val SecondaryBlueDark = Color(0xFF174EA6)
-val AccentOrangeDark = Color(0xFFFFC440)
-val BackgroundLight = Color(0xFFF8F9FA)
-val BackgroundDark = Color(0xFF121212)
-val SurfaceLight = Color(0xFFFFFFFF)
-val SurfaceDark = Color(0xFF1E1E1E)
-val ErrorRed = Color(0xFFD93025)
+// Neutral Palette
+val WhiteOff = Color(0xFFF8F9FA) // Softer than pure white
+val Charcoal = Color(0xFF1F1F1F) // Softer than pure black
+val GraySoft = Color(0xFFB0B3B8)
+
+// Primary Edu-Blue Palette
+val PrimaryBlue = Color(0xFF4A90E2)
+val PrimaryBlueDark = Color(0xFF357ABD)
+
+// Functional Colors
+val SuccessGreen = Color(0xFF4CAF50)
+val WarningOrange = Color(0xFFFF9800)
+val ErrorRed = Color(0xFFE53935)
