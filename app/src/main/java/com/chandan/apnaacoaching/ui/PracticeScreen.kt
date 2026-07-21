@@ -28,10 +28,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.chandan.apnaacoaching.R
 
 @Composable
 fun PracticeScreen(
@@ -45,22 +47,22 @@ fun PracticeScreen(
     ) {
 
         Text(
-            text = "Practice Zone",
+            text = stringResource(R.string.practice_zone),
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.primary
         )
 
         Text(
-            text = "Sharpen your skills with interactive tests and games.",
+            text = stringResource(R.string.sharpen_your_skills_with_interactive_tests_and_games),
             style = MaterialTheme.typography.bodyMedium,
-            color = Color.Gray
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
         )
 
         Spacer(modifier = Modifier.height(8.dp))
 
         PracticeTile(
-            title = "Live Test",
+            title = stringResource(R.string.live_test),
             description = "Compete with thousands of students in real-time.",
             icon = Icons.Default.Timer,
             containerColor = Color(0xFFE3F2FD), // Light Blue
@@ -68,7 +70,7 @@ fun PracticeScreen(
             onClick = { navController.navigate("test_list/live") })
 
         PracticeTile(
-            title = "Mock Test",
+            title = stringResource(R.string.mock_test),
             description = "Full-length tests based on the latest BPSC & UGC NET patterns.",
             icon = Icons.AutoMirrored.Filled.Assignment,
             containerColor = Color(0xFFE8F5E9), // Light Green
@@ -76,7 +78,7 @@ fun PracticeScreen(
             onClick = { navController.navigate("test_list/mock") })
 
         PracticeTile(
-            title = "Play KBC",
+            title = stringResource(R.string.play_kbc),
             description = "Learn with fun! Answer questions, use lifelines, and win points.",
             icon = Icons.Default.Star,
             containerColor = Color(0xFFFFF3E0), // Light Orange
@@ -113,7 +115,7 @@ fun PracticeTile(
             Box(
                 modifier = Modifier
                     .size(56.dp)
-                    .background(Color.White, RoundedCornerShape(12.dp)),
+                    .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(12.dp)),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
@@ -131,13 +133,13 @@ fun PracticeTile(
                     text = title,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.Black
+                    color = MaterialTheme.colorScheme.onBackground
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = description,
                     fontSize = 12.sp,
-                    color = Color.DarkGray,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     lineHeight = 16.sp
                 )
             }

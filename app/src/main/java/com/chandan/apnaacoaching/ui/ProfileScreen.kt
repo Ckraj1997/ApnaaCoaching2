@@ -44,11 +44,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.chandan.apnaacoaching.R
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -134,7 +136,10 @@ fun ProfileScreen(
                             fontSize = 24.sp,
                             fontWeight = FontWeight.Bold
                         )
-                        Text(text = profile.email, color = Color.Gray)
+                        Text(
+                            text = profile.email,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                        )
 
                         Spacer(modifier = Modifier.height(32.dp))
 
@@ -159,13 +164,13 @@ fun ProfileScreen(
                                     )
                                     Spacer(modifier = Modifier.width(12.dp))
                                     Text(
-                                        "My Wallet",
+                                        stringResource(R.string.my_wallet),
                                         fontSize = 18.sp,
                                         fontWeight = FontWeight.Bold
                                     )
                                 }
                                 Text(
-                                    "${profile.coins} Coins",
+                                    stringResource(R.string.coins, profile.coins),
                                     fontSize = 20.sp,
                                     fontWeight = FontWeight.ExtraBold,
                                     color = Color(0xFFE65100)
@@ -177,28 +182,28 @@ fun ProfileScreen(
 
                         Card(
                             modifier = Modifier.fillMaxWidth(),
-                            colors = CardDefaults.cardColors(containerColor = Color.White),
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                             elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                         ) {
                             Column(modifier = Modifier.padding(16.dp)) {
                                 Text(
-                                    "Personal Details",
+                                    stringResource(R.string.personal_details),
                                     fontWeight = FontWeight.Bold,
                                     modifier = Modifier.padding(bottom = 12.dp)
                                 )
 
                                 ProfileDetailRow(
                                     icon = Icons.Default.Phone,
-                                    label = "Phone",
+                                    label = stringResource(R.string.phone),
                                     value = profile.phone?.takeIf { it.isNotBlank() }
-                                        ?: "Not added")
+                                        ?: stringResource(R.string.not_added))
                                 HorizontalDivider(color = Color(0xFFF5F5F5))
 
                                 ProfileDetailRow(
                                     icon = Icons.Default.DateRange,
-                                    label = "Date of Birth",
+                                    label = stringResource(R.string.date_of_birth),
                                     value = profile.dob?.takeIf { it != "1970-01-01" && it.isNotBlank() }
-                                        ?: "Not added")
+                                        ?: stringResource(R.string.not_addedc))
                                 HorizontalDivider(color = Color(0xFFF5F5F5))
 
                                 val fullAddress = listOfNotNull(
@@ -210,8 +215,8 @@ fun ProfileScreen(
 
                                 ProfileDetailRow(
                                     icon = Icons.Default.LocationOn,
-                                    label = "Address",
-                                    value = fullAddress.ifEmpty { "Not added" }
+                                    label = stringResource(R.string.address),
+                                    value = fullAddress.ifEmpty { stringResource(R.string.not_addedd) }
                                 )
                             }
                         }
@@ -236,11 +241,20 @@ fun ProfileDetailRow(
             .padding(vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Icon(icon, contentDescription = label, tint = Color.Gray, modifier = Modifier.size(24.dp))
+        Icon(
+            icon,
+            contentDescription = label,
+            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+            modifier = Modifier.size(24.dp)
+        )
         Spacer(modifier = Modifier.width(16.dp))
         Column {
-            Text(text = label, fontSize = 12.sp, color = Color.Gray)
-            Text(text = value, fontSize = 16.sp, color = Color.DarkGray)
+            Text(
+                text = label,
+                fontSize = 12.sp,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+            )
+            Text(text = value, fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
     }
 }

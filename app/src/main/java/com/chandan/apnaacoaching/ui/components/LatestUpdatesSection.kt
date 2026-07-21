@@ -18,15 +18,19 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.chandan.apnaacoaching.R
 import com.chandan.apnaacoaching.data.LatestUpdate
 
 @Composable
 fun LatestUpdatesSection(updates: List<LatestUpdate>) {
     if (updates.isEmpty()) {
-        Text("No new updates at this time.", color = Color.Gray)
+        Text(
+            stringResource(R.string.no_new_updates_at_this_time),
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+        )
         return
     }
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -55,7 +59,7 @@ fun LatestUpdatesSection(updates: List<LatestUpdate>) {
                         Text(
                             text = update.description,
                             style = MaterialTheme.typography.bodySmall,
-                            color = Color.Gray
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                         )
                     }
                 }

@@ -38,11 +38,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.chandan.apnaacoaching.R
 import com.chandan.apnaacoaching.data.CategoryItem
 
 @Composable
@@ -60,7 +62,7 @@ fun CategoryScreen(
 
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = Color(0xFFF8F9FA) // Background color applied directly here
+        color = MaterialTheme.colorScheme.background // Background color applied directly here
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
 
@@ -69,7 +71,7 @@ fun CategoryScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .shadow(elevation = 4.dp)
-                    .background(Color.White)
+                    .background(MaterialTheme.colorScheme.surface)
 //                    .statusBarsPadding() // Ensures it doesn't overlap the device battery/time bar
                     .height(56.dp)
                     .padding(horizontal = 4.dp),
@@ -79,15 +81,15 @@ fun CategoryScreen(
                     Icon(
                         Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "Back",
-                        tint = Color.Black
+                        tint = MaterialTheme.colorScheme.onBackground
                     )
                 }
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "Select Category",
+                    text = stringResource(R.string.select_category),
                     fontWeight = FontWeight.Bold,
                     fontSize = 20.sp,
-                    color = Color.Black
+                    color = MaterialTheme.colorScheme.onBackground
                 )
             }
 
@@ -113,8 +115,8 @@ fun CategoryScreen(
                     is CategoryUiState.Success -> {
                         if (state.categories.isEmpty()) {
                             Text(
-                                "No categories available.",
-                                color = Color.Gray,
+                                stringResource(R.string.no_categories_available),
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                                 modifier = Modifier.align(Alignment.Center)
                             )
                         } else {
@@ -144,7 +146,7 @@ fun CategoryCard(category: CategoryItem, onClick: () -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onClick() },
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Row(
@@ -176,7 +178,7 @@ fun CategoryCard(category: CategoryItem, onClick: () -> Unit) {
                 Text(
                     text = category.description,
                     fontSize = 14.sp,
-                    color = Color.Gray,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                     maxLines = 2
                 )
             }
@@ -184,7 +186,7 @@ fun CategoryCard(category: CategoryItem, onClick: () -> Unit) {
             Icon(
                 Icons.AutoMirrored.Filled.KeyboardArrowRight,
                 contentDescription = "Go",
-                tint = Color.Gray
+                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
             )
         }
     }

@@ -41,10 +41,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.chandan.apnaacoaching.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -64,8 +66,8 @@ fun InstructionsScreen(
     if (showExitDialog) {
         AlertDialog(
             onDismissRequest = { showExitDialog = false },
-            title = { Text("Exit Assessment?") },
-            text = { Text("Are you sure you want to leave? You will need to re-read the instructions if you return.") },
+            title = { Text(stringResource(R.string.exit_assessment)) },
+            text = { Text(stringResource(R.string.are_you_sure_you_want_to_leave_you_will_need_to_re_read_the_instructions_if_you_return)) },
             confirmButton = {
                 TextButton(
                     onClick = {
@@ -73,12 +75,12 @@ fun InstructionsScreen(
                         navController.navigateUp() // Actually exit
                     }
                 ) {
-                    Text("Exit", color = Color.Red)
+                    Text(stringResource(R.string.exit), color = Color.Red)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showExitDialog = false }) {
-                    Text("Stay")
+                    Text(stringResource(R.string.stay))
                 }
             }
         )
@@ -105,7 +107,7 @@ fun InstructionsScreen(
                     }
 
                     Text(
-                        text = "Instructions",
+                        text = stringResource(R.string.instructions),
                         style = MaterialTheme.typography.titleLarge,
                         modifier = Modifier
                             .weight(1f)
@@ -264,7 +266,11 @@ fun LegendItem(color: Color, number: String, text: String, textColor: Color) {
             modifier = Modifier
                 .size(32.dp)
                 .background(color, RoundedCornerShape(4.dp))
-                .border(1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f), RoundedCornerShape(4.dp))
+                .border(
+                    1.dp,
+                    MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                    RoundedCornerShape(4.dp)
+                )
         ) {
             Text(text, color = textColor, fontWeight = FontWeight.Bold)
         }

@@ -1,30 +1,43 @@
 package com.chandan.apnaacoaching.ui.studymaterial.video
 
+//import androidx.lifecycle.compose.LocalLifecycleOwner
 import android.content.Intent
-import android.net.Uri
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.*
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
-//import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.core.net.toUri
 import androidx.navigation.NavController
+import com.chandan.apnaacoaching.R
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstants
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
-import androidx.core.net.toUri
 
 @Composable
 fun VideoPlayerScreen(
@@ -37,7 +50,7 @@ fun VideoPlayerScreen(
 
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = Color.Black // Cinematic black background
+        color = MaterialTheme.colorScheme.onBackground // Cinematic black background
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
 
@@ -46,20 +59,24 @@ fun VideoPlayerScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .shadow(elevation = 4.dp)
-                    .background(Color.White)
+                    .background(MaterialTheme.colorScheme.surface)
                     .height(56.dp)
                     .padding(horizontal = 4.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 IconButton(onClick = { navController.navigateUp() }) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color.Black)
+                    Icon(
+                        Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Back",
+                        tint = MaterialTheme.colorScheme.onBackground
+                    )
                 }
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "Playing Video",
+                    text = stringResource(R.string.playing_video),
                     fontWeight = FontWeight.Bold,
                     fontSize = 20.sp,
-                    color = Color.Black
+                    color = MaterialTheme.colorScheme.onBackground
                 )
             }
 
@@ -86,7 +103,10 @@ fun VideoPlayerScreen(
                                 }
 
                                 // --- ADD THIS ERROR CATCHER ---
-                                override fun onError(youTubePlayer: YouTubePlayer, error: PlayerConstants.PlayerError) {
+                                override fun onError(
+                                    youTubePlayer: YouTubePlayer,
+                                    error: PlayerConstants.PlayerError
+                                ) {
                                     super.onError(youTubePlayer, error)
 
                                     // If YouTube blocks the embed (Error 150/152), redirect to the YouTube App
@@ -100,8 +120,10 @@ fun VideoPlayerScreen(
                                         context.startActivity(intent)
                                     } catch (e: Exception) {
                                         // Fallback if they don't have the YouTube app installed
-                                        val webIntent = Intent(Intent.ACTION_VIEW,
-                                            "https://www.youtube.com/watch?v=$videoId".toUri())
+                                        val webIntent = Intent(
+                                            Intent.ACTION_VIEW,
+                                            "https://www.youtube.com/watch?v=$videoId".toUri()
+                                        )
                                         context.startActivity(webIntent)
                                     }
                                 }

@@ -112,4 +112,6 @@ dependencies {
     implementation(libs.youtube.player.core)
 //    implementation(libs.android.pdf.viewer)
     implementation(libs.bouquet.viewer)
+
+    implementation(libs.androidx.appcompat)
 }

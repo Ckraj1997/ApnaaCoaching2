@@ -27,7 +27,8 @@ class QuizListViewModel : ViewModel() {
                 if (response.status == "success") {
                     _uiState.value = QuizListUiState.Success(response.quizzes)
                 } else {
-                    _uiState.value = QuizListUiState.Error(response.message ?: "Failed to load quizzes.")
+                    _uiState.value =
+                        QuizListUiState.Error(response.message ?: "Failed to load quizzes.")
                 }
             } catch (e: Exception) {
                 _uiState.value = QuizListUiState.Error(e.localizedMessage ?: "Network error")

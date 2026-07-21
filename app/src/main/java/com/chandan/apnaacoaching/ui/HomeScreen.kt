@@ -32,10 +32,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.chandan.apnaacoaching.R
 import com.chandan.apnaacoaching.ui.components.ImageCarousel
 import com.chandan.apnaacoaching.ui.components.LatestUpdatesSection
 import com.chandan.apnaacoaching.ui.components.StudyGroupsGrid
@@ -122,7 +124,7 @@ fun HomeScreen(
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text(
-                            "Study Groups",
+                            stringResource(R.string.study_groups),
                             style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.Bold
                         )
@@ -141,7 +143,7 @@ fun HomeScreen(
 
                 item {
                     Text(
-                        "Latest Updates",
+                        stringResource(R.string.latest_updates),
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.padding(bottom = 8.dp)

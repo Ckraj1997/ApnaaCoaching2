@@ -31,10 +31,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import com.chandan.apnaacoaching.R
 import com.chandan.apnaacoaching.ui.components.RankingTab
 import com.chandan.apnaacoaching.ui.components.SolutionsTab
 import com.chandan.apnaacoaching.ui.components.StatsTab
@@ -49,7 +51,9 @@ fun DetailedResultScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     var selectedTabIndex by remember { mutableIntStateOf(0) }
-    val tabs = listOf("Stats", "Ranking", "Solutions")
+    val tabs = listOf(stringResource(R.string.stats), stringResource(R.string.ranking),
+        stringResource(R.string.solutions)
+    )
 
     LaunchedEffect(quizId) {
         viewModel.fetchDetailedResult(quizId, userId)
@@ -71,7 +75,7 @@ fun DetailedResultScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Exam Report", fontWeight = FontWeight.Bold) },
+                title = { Text(stringResource(R.string.exam_report), fontWeight = FontWeight.Bold) },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface)
             )
         },
@@ -85,7 +89,7 @@ fun DetailedResultScreen(
                         .padding(16.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                 ) {
-                    Text("Back to Test List")
+                    Text(stringResource(R.string.back_to_test_list))
                 }
             }
         }
@@ -114,9 +118,12 @@ fun DetailedResultScreen(
                         modifier = Modifier.align(Alignment.Center),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Text("Results Awaiting", style = MaterialTheme.typography.headlineMedium)
+                        Text(stringResource(R.string.results_awaiting), style = MaterialTheme.typography.headlineMedium)
                         Spacer(modifier = Modifier.height(8.dp))
-                        Text("Will be released at: ${state.releaseTime}", color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f))
+                        Text(
+                            stringResource(R.string.will_be_released_at, state.releaseTime),
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                        )
                     }
                 }
 

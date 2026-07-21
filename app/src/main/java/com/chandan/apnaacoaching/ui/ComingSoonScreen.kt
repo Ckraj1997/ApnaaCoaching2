@@ -16,11 +16,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.chandan.apnaacoaching.R
 
 @Composable
 fun ComingSoonScreen(featureName: String, modifier: Modifier = Modifier) {
@@ -40,7 +41,7 @@ fun ComingSoonScreen(featureName: String, modifier: Modifier = Modifier) {
         )
         Spacer(modifier = Modifier.height(24.dp))
         Text(
-            text = "$featureName is Coming Soon!",
+            text = stringResource(R.string.is_coming_soon, featureName),
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onBackground,
@@ -48,9 +49,9 @@ fun ComingSoonScreen(featureName: String, modifier: Modifier = Modifier) {
         )
         Spacer(modifier = Modifier.height(12.dp))
         Text(
-            text = "We are working hard to bring you this feature. Check back in the next update!",
+            text = stringResource(R.string.we_are_working_hard_to_bring_you_this_feature_check_back_in_the_next_update),
             fontSize = 16.sp,
-            color = Color.Gray,
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
             textAlign = TextAlign.Center
         )
     }

@@ -38,11 +38,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.chandan.apnaacoaching.R
 import com.chandan.apnaacoaching.data.LevelItem
 
 @Composable
@@ -60,7 +62,7 @@ fun LevelScreen(
 
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = Color(0xFFF8F9FA) // Applied your background color directly to the Surface
+        color = MaterialTheme.colorScheme.background // Applied your background color directly to the Surface
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
 
@@ -69,7 +71,7 @@ fun LevelScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .shadow(elevation = 4.dp)
-                    .background(Color.White)
+                    .background(MaterialTheme.colorScheme.surface)
 //                    .statusBarsPadding() // Ensures it doesn't overlap the device battery/time bar
                     .height(56.dp)
                     .padding(horizontal = 4.dp),
@@ -79,15 +81,15 @@ fun LevelScreen(
                     Icon(
                         Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "Back",
-                        tint = Color.Black
+                        tint = MaterialTheme.colorScheme.onBackground
                     )
                 }
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "Select Level",
+                    text = stringResource(R.string.select_level),
                     fontWeight = FontWeight.Bold,
                     fontSize = 20.sp,
-                    color = Color.Black
+                    color = MaterialTheme.colorScheme.onBackground
                 )
             }
 
@@ -113,8 +115,8 @@ fun LevelScreen(
                     is LevelUiState.Success -> {
                         if (state.levels.isEmpty()) {
                             Text(
-                                "No levels available.",
-                                color = Color.Gray,
+                                stringResource(R.string.no_levels_available),
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                                 modifier = Modifier.align(Alignment.Center)
                             )
                         } else {
@@ -144,7 +146,7 @@ fun LevelCard(level: LevelItem, onClick: () -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onClick() },
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Row(
@@ -178,7 +180,7 @@ fun LevelCard(level: LevelItem, onClick: () -> Unit) {
                 Text(
                     text = level.description,
                     fontSize = 14.sp,
-                    color = Color.Gray,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                     maxLines = 2
                 )
             }
@@ -187,7 +189,7 @@ fun LevelCard(level: LevelItem, onClick: () -> Unit) {
             Icon(
                 Icons.AutoMirrored.Filled.KeyboardArrowRight,
                 contentDescription = "Go",
-                tint = Color.Gray
+                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
             )
         }
     }

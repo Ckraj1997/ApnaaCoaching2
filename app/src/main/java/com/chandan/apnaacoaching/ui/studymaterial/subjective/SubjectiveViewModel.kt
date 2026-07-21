@@ -32,7 +32,8 @@ class SubjectiveViewModel : ViewModel() {
 
         viewModelScope.launch {
             try {
-                val response = RetrofitClient.StudyApi.getSubjectiveQuestions(groupId, levelId, catId)
+                val response =
+                    RetrofitClient.StudyApi.getSubjectiveQuestions(groupId, levelId, catId)
                 if (response.status == "success") {
                     _uiState.value = SubjectiveUiState.Success(response.questions)
                 } else {

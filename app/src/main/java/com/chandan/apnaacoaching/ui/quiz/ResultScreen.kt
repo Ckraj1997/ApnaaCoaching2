@@ -32,11 +32,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.chandan.apnaacoaching.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -47,12 +49,12 @@ fun ResultScreen(
     correctCount: Int,
     wrongCount: Int,
     unattemptedCount: Int,
-    resultReleaseTime: String = "Scheduled Time" // Passed from your backend if available
+    resultReleaseTime: String = stringResource(R.string.scheduled_time) // Passed from your backend if available
 ) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Exam Summary", fontWeight = FontWeight.Bold) },
+                title = { Text(stringResource(R.string.exam_summarys), fontWeight = FontWeight.Bold) },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface)
             )
         }
@@ -77,14 +79,14 @@ fun ResultScreen(
                 )
                 Spacer(modifier = Modifier.height(24.dp))
                 Text(
-                    text = "Test Submitted Successfully!",
+                    text = stringResource(R.string.test_submitted_successfully),
                     style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = "This is a Live Test. Results and ranks will be declared on:",
+                    text = stringResource(R.string.this_is_a_live_test_results_and_ranks_will_be_declared_on),
                     textAlign = TextAlign.Center,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                 )
@@ -107,7 +109,7 @@ fun ResultScreen(
                     correctCount // Assuming 1 mark per correct answer, 0 negative marking. Adjust if needed.
 
                 Text(
-                    text = "Your Score",
+                    text = stringResource(R.string.your_score),
                     fontSize = 20.sp,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                 )
@@ -125,19 +127,19 @@ fun ResultScreen(
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
                     ResultStatCard(
-                        "Correct",
+                        stringResource(R.string.corrects),
                         correctCount.toString(),
                         Color(0xFF4CAF50),
                         Icons.Default.CheckCircle
                     )
                     ResultStatCard(
-                        "Incorrect",
+                        stringResource(R.string.incorrects),
                         wrongCount.toString(),
                         Color(0xFFF44336),
                         Icons.Default.Cancel
                     )
                     ResultStatCard(
-                        "Skipped",
+                        stringResource(R.string.skippeds),
                         unattemptedCount.toString(),
                         Color(0xFF9E9E9E),
                         Icons.Default.AccessTimeFilled
@@ -160,7 +162,7 @@ fun ResultScreen(
             ) {
                 Icon(Icons.Default.Home, contentDescription = "Home")
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("Back to Dashboard", fontSize = 16.sp)
+                Text(stringResource(R.string.back_to_dashboard), fontSize = 16.sp)
             }
         }
     }
@@ -187,7 +189,11 @@ fun ResultStatCard(title: String, value: String, color: Color, icon: ImageVector
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             Spacer(modifier = Modifier.height(4.dp))
-            Text(text = title, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f))
+            Text(
+                text = title,
+                fontSize = 12.sp,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+            )
         }
     }
 }

@@ -56,11 +56,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.chandan.apnaacoaching.R
 
 val ColorAnswered = Color(0xFF4CAF50) // Green
 val ColorNotAnswered = Color(0xFFF44336) // Red
@@ -103,7 +105,8 @@ fun QuizScreen(
 
     LaunchedEffect(isAutoSubmitted) {
         if (isAutoSubmitted) {
-            Toast.makeText(context, "Time's up! Exam auto-submitted.", Toast.LENGTH_LONG).show()
+            Toast.makeText(context,
+                context.getString(R.string.time_s_up_exam_auto_submitted), Toast.LENGTH_LONG).show()
 
             navController.navigate("detailed_result_screen/$quizId/$userId") {
                 popUpTo("quiz_screen/$quizId") { inclusive = true }
@@ -141,7 +144,7 @@ fun QuizScreen(
 
         AlertDialog(
             onDismissRequest = { showSubmitDialog = false },
-            title = { Text("Exam Summary", fontWeight = FontWeight.Bold) },
+            title = { Text(stringResource(R.string.exam_summary), fontWeight = FontWeight.Bold) },
             text = {
                 Column {
 
@@ -149,7 +152,7 @@ fun QuizScreen(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Text("Total Questions:", fontWeight = FontWeight.Bold)
+                        Text(stringResource(R.string.total_questions), fontWeight = FontWeight.Bold)
                         Text("$totalQuestions")
                     }
                     HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
@@ -157,40 +160,43 @@ fun QuizScreen(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Text("Answered:", color = ColorAnswered)
+                        Text(stringResource(R.string.answered), color = ColorAnswered)
                         Text("$answered")
                     }
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Text("Not Answered:", color = ColorNotAnswered)
+                        Text(stringResource(R.string.not_answered), color = ColorNotAnswered)
                         Text("$notAnswered") // Update when visited logic is added
                     }
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Text("Marked for Review:", color = ColorMarked)
+                        Text(stringResource(R.string.marked_for_review), color = ColorMarked)
                         Text("$marked")
                     }
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Text("Answered & Marked:", color = ColorAnsweredMarked)
+                        Text(stringResource(R.string.answered_marked), color = ColorAnsweredMarked)
                         Text("$answeredMarked")
                     }
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Text("Not Visited:", color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f))
+                        Text(
+                            stringResource(R.string.not_visited),
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                        )
                         Text("$notVisited")
                     }
                     Spacer(modifier = Modifier.height(16.dp))
                     Text(
-                        "Are you sure you want to submit for final marking? No changes will be allowed after submission.",
+                        stringResource(R.string.are_you_sure_you_want_to_submit_for_final_marking_no_changes_will_be_allowed_after_submission),
                         color = MaterialTheme.colorScheme.error,
                         fontWeight = FontWeight.Bold,
                         fontSize = 14.sp
@@ -216,7 +222,7 @@ fun QuizScreen(
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50))
                 ) {
-                    Text("YES")
+                    Text(stringResource(R.string.yes))
                 }
             },
             dismissButton = {
@@ -224,7 +230,7 @@ fun QuizScreen(
                     onClick = { showSubmitDialog = false },
                     colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
                 ) {
-                    Text("NO")
+                    Text(stringResource(R.string.no))
                 }
             }
         )
@@ -307,7 +313,8 @@ fun QuizScreen(
                             isVisited -> ColorNotAnswered
                             else -> ColorNotVisited
                         }
-                        val textColor = if (bgColor == ColorNotVisited) MaterialTheme.colorScheme.onSurface else Color.White
+                        val textColor =
+                            if (bgColor == ColorNotVisited) MaterialTheme.colorScheme.onSurface else Color.White
                         Box(
                             modifier = Modifier
                                 .size(36.dp)
@@ -341,7 +348,7 @@ fun QuizScreen(
                         .padding(16.dp)
                 ) {
                     Text(
-                        text = "Question ${currentIndex + 1}",
+                        text = stringResource(R.string.question, currentIndex + 1),
                         color = MaterialTheme.colorScheme.primary,
                         fontWeight = FontWeight.Bold,
                         fontSize = 16.sp
@@ -369,17 +376,6 @@ fun QuizScreen(
                                 .heightIn(max = 200.dp),
                             contentScale = ContentScale.FillWidth
                         )
-
-//                        val optImg = optionsImgList[index]
-//                        if (!optImg.isNullOrEmpty() && optImg != "/config/image/option/" && optImg != "/config/image/option/image.hindi") {
-//                            AsyncImage(
-//                                model = baseUrl + optImg,
-//                                contentDescription = "Option Image",
-//                                modifier = Modifier.heightIn(max = 100.dp),
-//                                contentScale = ContentScale.Fit
-//                            )
-//                            Spacer(modifier = Modifier.height(8.dp))
-//                        }
                     }
 
                     Spacer(modifier = Modifier.height(24.dp))
@@ -399,7 +395,7 @@ fun QuizScreen(
                                 .clickable { viewModel.selectAnswer(currentQue.id, optionId) }
                                 .border(
                                     width = if (isSelected) 2.dp else 1.dp,
-                                    color = if (isSelected) MaterialTheme.colorScheme.primary else Color.LightGray,
+                                    color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant,
                                     shape = RoundedCornerShape(8.dp)
                                 ),
                             colors = CardDefaults.cardColors(
@@ -418,7 +414,9 @@ fun QuizScreen(
                                         .clip(CircleShape)
                                         .border(
                                             2.dp,
-                                            if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                                            if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(
+                                                alpha = 0.7f
+                                            ),
                                             CircleShape
                                         ),
                                     contentAlignment = Alignment.Center
@@ -473,11 +471,16 @@ fun QuizScreen(
                         val isCurrentlyMarked = markedQuestions.contains(questions[currentIndex].id)
 
                         TextButton(onClick = { viewModel.clearAnswer() }) {
-                            Text("Clear Response", color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f))
+                            Text(
+                                stringResource(R.string.clear_response),
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                            )
                         }
                         TextButton(onClick = { viewModel.toggleMarkForReview() }) {
                             Text(
-                                if (isCurrentlyMarked) "Unmark" else "Mark for Review",
+                                if (isCurrentlyMarked) stringResource(R.string.unmark) else stringResource(
+                                    R.string.mark_for_review
+                                ),
                                 color = ColorMarked
                             )
                         }
@@ -501,7 +504,7 @@ fun QuizScreen(
                                 modifier = Modifier.size(18.dp)
                             )
                             Spacer(modifier = Modifier.width(4.dp))
-                            Text("Prev")
+                            Text(stringResource(R.string.prev))
                         }
 
                         if (currentIndex == questions.size - 1) {
@@ -509,11 +512,11 @@ fun QuizScreen(
                                 onClick = { showSubmitDialog = true },
                                 colors = ButtonDefaults.buttonColors(containerColor = ColorAnswered)
                             ) {
-                                Text("Submit Final")
+                                Text(stringResource(R.string.submit_final))
                             }
                         } else {
                             Button(onClick = { viewModel.nextQuestion() }) {
-                                Text("Save & Next")
+                                Text(stringResource(R.string.save_next))
                                 Spacer(modifier = Modifier.width(4.dp))
                                 Icon(
                                     Icons.AutoMirrored.Filled.ArrowForward,

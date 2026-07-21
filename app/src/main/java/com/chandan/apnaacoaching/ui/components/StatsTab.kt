@@ -17,9 +17,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.chandan.apnaacoaching.R
 import com.chandan.apnaacoaching.data.ResultStats
 import com.chandan.apnaacoaching.data.TestConfig
 
@@ -40,8 +42,8 @@ fun StatsTab(stats: ResultStats?, config: TestConfig?) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 16.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
-                border = BorderStroke(1.dp, Color.LightGray)
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
             ) {
                 Row(
                     modifier = Modifier
@@ -50,11 +52,19 @@ fun StatsTab(stats: ResultStats?, config: TestConfig?) {
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text("Duration", color = Color.Gray, fontSize = 12.sp)
-                        Text("${config.time_duration} mins", fontWeight = FontWeight.Bold)
+                        Text(
+                            stringResource(R.string.duration),
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                            fontSize = 12.sp
+                        )
+                        Text(stringResource(R.string.mins, config.time_duration), fontWeight = FontWeight.Bold)
                     }
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text("Correct (+)", color = Color.Gray, fontSize = 12.sp)
+                        Text(
+                            stringResource(R.string.correct),
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                            fontSize = 12.sp
+                        )
                         Text(
                             "+${config.plus_point}",
                             fontWeight = FontWeight.Bold,
@@ -62,7 +72,11 @@ fun StatsTab(stats: ResultStats?, config: TestConfig?) {
                         )
                     }
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text("Incorrect (-)", color = Color.Gray, fontSize = 12.sp)
+                        Text(
+                            stringResource(R.string.incorrect),
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                            fontSize = 12.sp
+                        )
                         Text(
                             "-${config.minus_point}",
                             fontWeight = FontWeight.Bold,
@@ -84,7 +98,7 @@ fun StatsTab(stats: ResultStats?, config: TestConfig?) {
                     .fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text("Marks Obtained", color = MaterialTheme.colorScheme.primary)
+                Text(stringResource(R.string.marks_obtained), color = MaterialTheme.colorScheme.primary)
                 Text(
                     stats.marks_text,
                     fontSize = 40.sp,
@@ -98,9 +112,9 @@ fun StatsTab(stats: ResultStats?, config: TestConfig?) {
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            StatBox(title = "Total", value = stats.total.toString(), modifier = Modifier.weight(1f))
+            StatBox(title = stringResource(R.string.total), value = stats.total.toString(), modifier = Modifier.weight(1f))
             StatBox(
-                title = "Attempted",
+                title = stringResource(R.string.attempted),
                 value = stats.attempted.toString(),
                 modifier = Modifier.weight(1f)
             )
@@ -111,21 +125,21 @@ fun StatsTab(stats: ResultStats?, config: TestConfig?) {
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             StatBox(
-                title = "Correct",
+                title = stringResource(R.string.correct_s),
                 value = stats.correct.toString(),
                 color = Color(0xFF4CAF50),
                 modifier = Modifier.weight(1f)
             )
             StatBox(
-                title = "Wrong",
+                title = stringResource(R.string.wrong),
                 value = stats.wrong.toString(),
                 color = Color(0xFFF44336),
                 modifier = Modifier.weight(1f)
             )
             StatBox(
-                title = "Skipped",
+                title = stringResource(R.string.skipped),
                 value = stats.unattempted.toString(),
-                color = Color.Gray,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                 modifier = Modifier.weight(1f)
             )
         }
@@ -137,11 +151,11 @@ fun StatBox(
     title: String,
     value: String,
     modifier: Modifier = Modifier,
-    color: Color = Color.DarkGray
+    color: Color = MaterialTheme.colorScheme.onSurfaceVariant
 ) {
     Card(
         modifier = modifier,
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(
@@ -151,7 +165,11 @@ fun StatBox(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(value, fontSize = 24.sp, fontWeight = FontWeight.Bold, color = color)
-            Text(title, fontSize = 12.sp, color = Color.Gray)
+            Text(
+                title,
+                fontSize = 12.sp,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+            )
         }
     }
 }

@@ -29,6 +29,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -36,11 +37,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.chandan.apnaacoaching.R
 import com.chandan.apnaacoaching.data.MaterialType
 
 // Data class to hold the static material options
@@ -56,37 +59,37 @@ fun StudyMaterialScreen(
     val materialOptions = listOf(
         MaterialType(
             "one_linear",
-            "One Linear",
-            "Easy to remember and learn.",
+            stringResource(R.string.one_linear),
+            stringResource(R.string.easy_to_remember_and_learn),
             Icons.AutoMirrored.Filled.Article,
             Color(0xFF4CAF50)
         ),
         MaterialType(
             "subjective",
-            "Long Question",
-            "Deep Learning.",
+            stringResource(R.string.long_question),
+            stringResource(R.string.deep_learning),
             Icons.Default.Description,
             Color(0xFF2196F3)
         ),
         MaterialType("quiz", "Quiz", "Empower yourself.", Icons.Default.Quiz, Color(0xFFFF9800)),
         MaterialType(
             "video",
-            "Video",
-            "Learn From video.",
+            stringResource(R.string.video),
+            stringResource(R.string.learn_from_video),
             Icons.Default.OndemandVideo,
             Color(0xFFF44336)
         ),
         MaterialType(
             "pdf",
-            "PDF",
-            "Take notes as a PDF.",
+            stringResource(R.string.pdf),
+            stringResource(R.string.take_notes_as_a_pdf),
             Icons.Default.PictureAsPdf,
             Color(0xFF9C27B0)
         ),
         MaterialType(
             "update",
-            "Current Affairs",
-            "Daily updates.",
+            stringResource(R.string.current_affairs),
+            stringResource(R.string.daily_updates),
             Icons.Default.Public,
             Color(0xFF00BCD4)
         )
@@ -94,7 +97,7 @@ fun StudyMaterialScreen(
 
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = Color(0xFFF8F9FA) // Clean background
+        color = MaterialTheme.colorScheme.background // Clean background
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
 
@@ -104,7 +107,7 @@ fun StudyMaterialScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .shadow(elevation = 4.dp)
-                    .background(Color.White)
+                    .background(MaterialTheme.colorScheme.surface)
 //                    .statusBarsPadding() // Ensures it doesn't overlap the device battery/time bar
                     .height(56.dp)
                     .padding(horizontal = 4.dp),
@@ -114,15 +117,15 @@ fun StudyMaterialScreen(
                     Icon(
                         Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "Back",
-                        tint = Color.Black
+                        tint = MaterialTheme.colorScheme.onBackground
                     )
                 }
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "Study Material",
+                    text = stringResource(R.string.study_materials),
                     fontWeight = FontWeight.Bold,
                     fontSize = 20.sp,
-                    color = Color.Black
+                    color = MaterialTheme.colorScheme.onBackground
                 )
             }
 
@@ -175,7 +178,7 @@ fun MaterialTile(option: MaterialType, onClick: () -> Unit) {
             .fillMaxWidth()
             .height(140.dp) // Fixed height for uniform square-ish tiles
             .clickable { onClick() },
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         shape = RoundedCornerShape(12.dp)
     ) {
@@ -197,14 +200,14 @@ fun MaterialTile(option: MaterialType, onClick: () -> Unit) {
                 text = option.title,
                 fontWeight = FontWeight.Bold,
                 fontSize = 16.sp,
-                color = Color.Black,
+                color = MaterialTheme.colorScheme.onBackground,
                 textAlign = TextAlign.Center
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = option.description,
                 fontSize = 11.sp,
-                color = Color.Gray,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                 textAlign = TextAlign.Center,
                 maxLines = 2
             )

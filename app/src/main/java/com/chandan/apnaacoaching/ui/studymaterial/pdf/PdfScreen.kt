@@ -1,18 +1,37 @@
 package com.chandan.apnaacoaching.ui.studymaterial.pdf
 
-import android.content.Intent
-import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.PictureAsPdf
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -20,12 +39,14 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.chandan.apnaacoaching.R
 import com.chandan.apnaacoaching.data.PdfItem
 
 @Composable
@@ -48,7 +69,7 @@ fun PdfScreen(
 
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = Color(0xFFF8F9FA)
+        color = MaterialTheme.colorScheme.background
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
 
@@ -57,35 +78,51 @@ fun PdfScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .shadow(elevation = 4.dp)
-                    .background(Color.White)
+                    .background(MaterialTheme.colorScheme.surface)
                     .height(56.dp)
                     .padding(horizontal = 4.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 IconButton(onClick = { navController.navigateUp() }) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color.Black)
+                    Icon(
+                        Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Back",
+                        tint = MaterialTheme.colorScheme.onBackground
+                    )
                 }
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "PDF Materials",
+                    text = stringResource(R.string.pdf_materials),
                     fontWeight = FontWeight.Bold,
                     fontSize = 20.sp,
-                    color = Color.Black
+                    color = MaterialTheme.colorScheme.onBackground
                 )
             }
 
             // --- MAIN LIST AREA ---
-            Box(modifier = Modifier.fillMaxWidth().weight(1f)) {
+            Box(modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f)) {
                 when (val state = uiState) {
                     is PdfUiState.Loading -> {
                         CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
                     }
+
                     is PdfUiState.Error -> {
-                        Text(state.message, color = Color.Red, modifier = Modifier.align(Alignment.Center))
+                        Text(
+                            state.message,
+                            color = Color.Red,
+                            modifier = Modifier.align(Alignment.Center)
+                        )
                     }
+
                     is PdfUiState.Success -> {
                         if (state.pdfs.isEmpty()) {
-                            Text("No PDFs found.", color = Color.Gray, modifier = Modifier.align(Alignment.Center))
+                            Text(
+                                stringResource(R.string.no_pdfs_found),
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                                modifier = Modifier.align(Alignment.Center)
+                            )
                         } else {
                             LazyColumn(
                                 contentPadding = PaddingValues(16.dp),
@@ -100,25 +137,39 @@ fun PdfScreen(
                                             if (!pdf.pdf_link.isNullOrEmpty()) {
                                                 var finalUrl = pdf.pdf_link.trim()
 
-                                                if (!finalUrl.startsWith("http://") && !finalUrl.startsWith("https://")) {
-                                                    finalUrl = if (finalUrl.contains("www.") || finalUrl.contains(".com") || finalUrl.contains("drive.google")) {
-                                                        "https://$finalUrl"
-                                                    } else {
-                                                        // FIX: Adjusted this path!
-                                                        // If your link is "pdf_files/...", this will output "https://apnaacoaching.in/config/image/pdf_files/..."
-                                                        // Ensure this matches exactly where your PDFs are stored on your Hostinger server!
-                                                        "https://apnaacoaching.in/config/image/$finalUrl"
-                                                    }
+                                                if (!finalUrl.startsWith("http://") && !finalUrl.startsWith(
+                                                        "https://"
+                                                    )
+                                                ) {
+                                                    finalUrl =
+                                                        if (finalUrl.contains("www.") || finalUrl.contains(
+                                                                ".com"
+                                                            ) || finalUrl.contains("drive.google")
+                                                        ) {
+                                                            "https://$finalUrl"
+                                                        } else {
+                                                            // FIX: Adjusted this path!
+                                                            // If your link is "pdf_files/...", this will output "https://apnaacoaching.in/config/image/pdf_files/..."
+                                                            // Ensure this matches exactly where your PDFs are stored on your Hostinger server!
+                                                            "https://apnaacoaching.in/config/image/$finalUrl"
+                                                        }
                                                 }
 
-                                                val cleanTitle = pdf.title ?: "Study_Material"
+                                                val cleanTitle = pdf.title ?: context.getString(R.string.study_material)
                                                 // URL Encode the final link
-                                                val encodedUrl = java.net.URLEncoder.encode(finalUrl, java.nio.charset.StandardCharsets.UTF_8.toString())
+                                                val encodedUrl = java.net.URLEncoder.encode(
+                                                    finalUrl,
+                                                    java.nio.charset.StandardCharsets.UTF_8.toString()
+                                                )
 
                                                 // Navigate
                                                 navController.navigate("pdf_player_screen/$encodedUrl/$cleanTitle")
                                             } else {
-                                                android.widget.Toast.makeText(context, "PDF link is empty.", android.widget.Toast.LENGTH_SHORT).show()
+                                                android.widget.Toast.makeText(
+                                                    context,
+                                                    context.getString(R.string.pdf_link_is_empty),
+                                                    android.widget.Toast.LENGTH_SHORT
+                                                ).show()
                                             }
                                         }
                                     )
@@ -142,12 +193,14 @@ fun PdfCard(
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onClick() },
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         shape = RoundedCornerShape(12.dp)
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth().padding(16.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
 
@@ -170,7 +223,7 @@ fun PdfCard(
                 } else {
                     AsyncImage(
                         model = pdfBaseUrl + pdf.pdf_thumbnail,
-                        contentDescription = "PDF Thumbnail",
+                        contentDescription = stringResource(R.string.pdf_thumbnail),
                         modifier = Modifier.fillMaxSize(),
                         contentScale = ContentScale.Crop
                     )
@@ -184,10 +237,10 @@ fun PdfCard(
                 modifier = Modifier.weight(1f)
             ) {
                 Text(
-                    text = pdf.title ?: "Untitled PDF",
+                    text = pdf.title ?: stringResource(R.string.untitled_pdf),
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp,
-                    color = Color.Black,
+                    color = MaterialTheme.colorScheme.onBackground,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -197,7 +250,7 @@ fun PdfCard(
                     Text(
                         text = pdf.Description,
                         fontSize = 14.sp,
-                        color = Color.DarkGray,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -206,7 +259,7 @@ fun PdfCard(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
-                    text = "View PDF",
+                    text = stringResource(R.string.view_pdf),
                     color = MaterialTheme.colorScheme.primary,
                     fontWeight = FontWeight.Bold,
                     fontSize = 14.sp

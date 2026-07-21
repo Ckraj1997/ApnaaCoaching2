@@ -23,8 +23,8 @@ class SessionManager(context: Context) {
     fun getUserName(): String? {
         return prefs.getString("USER_NAME", null)
     }
-
-    fun logout() {
+    fun clearSession() {
+        // This wipes all saved data (like userId, userName, auth tokens)
         prefs.edit { clear() }
     }
 }

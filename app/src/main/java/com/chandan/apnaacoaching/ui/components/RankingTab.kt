@@ -18,17 +18,18 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.chandan.apnaacoaching.R
 import com.chandan.apnaacoaching.data.RankingItem
 
 @Composable
 fun RankingTab(rankingList: List<RankingItem>?, currentUserId: String) {
     if (rankingList.isNullOrEmpty()) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Text("No ranking data available.")
+            Text(stringResource(R.string.no_ranking_data_available))
         }
         return
     }
@@ -46,7 +47,7 @@ fun RankingTab(rankingList: List<RankingItem>?, currentUserId: String) {
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(
 
-                    containerColor = if (isCurrentUser) MaterialTheme.colorScheme.primaryContainer else Color.White
+                    containerColor = if (isCurrentUser) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface
                 ),
                 border = if (isCurrentUser) BorderStroke(
                     1.dp,
@@ -67,7 +68,11 @@ fun RankingTab(rankingList: List<RankingItem>?, currentUserId: String) {
                     )
                     Column(modifier = Modifier.weight(1f)) {
                         Text(item.name, fontWeight = FontWeight.Bold)
-                        Text(item.user_id, fontSize = 12.sp, color = Color.Gray)
+                        Text(
+                            item.user_id,
+                            fontSize = 12.sp,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                        )
                     }
                     Column(horizontalAlignment = Alignment.End) {
                         Text(
@@ -78,7 +83,7 @@ fun RankingTab(rankingList: List<RankingItem>?, currentUserId: String) {
                         Text(
                             "C:${item.correct} W:${item.wrong}",
                             fontSize = 12.sp,
-                            color = Color.Gray
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                         )
                     }
                 }

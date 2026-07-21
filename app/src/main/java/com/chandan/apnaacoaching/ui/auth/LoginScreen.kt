@@ -32,12 +32,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.chandan.apnaacoaching.R
 
 @Composable
 fun LoginScreen(
@@ -48,23 +50,25 @@ fun LoginScreen(
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
-
     val authState by viewModel.authState.collectAsState()
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
 
     LaunchedEffect(authState) {
-        when (authState) {
+        when (val state = authState) {
             is AuthState.Success -> {
                 val userName = (authState as AuthState.Success).data.name ?: "User"
-                Toast.makeText(context, "Welcome, $userName!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, context.getString(R.string.login_welcome, userName), Toast.LENGTH_SHORT).show()
                 onLoginSuccess(userName)
                 viewModel.resetState()
             }
 
             is AuthState.Error -> {
-                val errorMsg = (authState as AuthState.Error).message
+                val errorMsg = state.messageId?.let { context.getString(it) }
+                    ?: state.apiMessage
+                    ?: context.getString(R.string.error_unknown)
+
                 Toast.makeText(context, errorMsg, Toast.LENGTH_LONG).show()
                 viewModel.resetState()
             }
@@ -88,7 +92,7 @@ fun LoginScreen(
         ) {
 
             Text(
-                text = "ApnaaCoaching",
+                text = stringResource(R.string.apnaacoaching),
                 fontSize = 32.sp,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary,
@@ -98,7 +102,7 @@ fun LoginScreen(
             OutlinedTextField(
                 value = email,
                 onValueChange = { email = it },
-                label = { Text("UserName or UserID") },
+                label = { Text(stringResource(id = R.string.hint_username)) },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
                 modifier = Modifier
                     .fillMaxWidth()
@@ -110,14 +114,14 @@ fun LoginScreen(
             OutlinedTextField(
                 value = password,
                 onValueChange = { password = it },
-                label = { Text("Password") },
+                label = { Text(stringResource(id = R.string.hint_password)) },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                 visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                 trailingIcon = {
                     val image =
                         if (passwordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
                     IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                        Icon(imageVector = image, contentDescription = "Toggle Password Visibility")
+                        Icon(imageVector = image, contentDescription = stringResource(id = R.string.cd_toggle_password))
                     }
                 },
                 modifier = Modifier
@@ -140,11 +144,11 @@ fun LoginScreen(
                         modifier = Modifier.size(24.dp)
                     )
                 } else {
-                    Text("Login", fontSize = 16.sp)
+                    Text(stringResource(id = R.string.btn_login), fontSize = 16.sp)
                 }
             }
             Spacer(modifier = Modifier.height(16.dp))
-            Text(text = "OR", style = MaterialTheme.typography.bodyMedium)
+            Text(text = stringResource(id = R.string.text_or), style = MaterialTheme.typography.bodyMedium)
             Spacer(modifier = Modifier.height(16.dp))
 
             OutlinedButton(
@@ -154,12 +158,12 @@ fun LoginScreen(
                     .height(50.dp),
                 enabled = authState !is AuthState.Loading
             ) {
-                Text("Sign in with Google", fontSize = 16.sp)
+                Text(stringResource(id = R.string.btn_google_login), fontSize = 16.sp)
             }
             Spacer(modifier = Modifier.height(24.dp))
 
             TextButton(onClick = onNavigateToSignUp) {
-                Text("Don't have an account? Create one")
+                Text(stringResource(id = R.string.btn_create_account))
             }
         }
     }

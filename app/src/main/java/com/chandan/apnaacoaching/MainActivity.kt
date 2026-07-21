@@ -3,17 +3,20 @@ package com.chandan.apnaacoaching
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.LocalActivityResultRegistryOwner
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
@@ -24,10 +27,12 @@ import com.chandan.apnaacoaching.ui.DashboardScreen
 import com.chandan.apnaacoaching.ui.auth.AuthViewModel
 import com.chandan.apnaacoaching.ui.auth.LoginScreen
 import com.chandan.apnaacoaching.ui.auth.triggerGoogleSignIn
+import com.chandan.apnaacoaching.ui.settings.LanguageViewModel
 import com.chandan.apnaacoaching.ui.theme.ApnaaCoachingTheme
 import com.chandan.apnaacoaching.ui.theme.ThemeViewModel
 import com.chandan.apnaacoaching.utils.SessionManager
 import kotlinx.coroutines.launch
+import java.util.Locale
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,58 +56,107 @@ class MainActivity : ComponentActivity() {
 
 
         setContent {
-            val themeViewModel: ThemeViewModel = viewModel()
-            val isDark by themeViewModel.isDarkMode.collectAsState()
-            ApnaaCoachingTheme(darkTheme = isDark) {
+            val languageViewModel: LanguageViewModel = viewModel()
+            val isHindi by languageViewModel.isHindi.collectAsState()
 
-                var loggedInUserId by remember { mutableStateOf(sessionManager.getUserId()) }
-                var loggedInUserName by remember { mutableStateOf(sessionManager.getUserName()) }
+            // 1. Determine the language code
+            val localeString = if (isHindi) "hi" else "en"
+            val locale = Locale(localeString)
 
-                if (loggedInUserId != null && loggedInUserName != null) {
+            // 2. Update the system configuration
+            val configuration = LocalConfiguration.current
+            configuration.setLocale(locale)
 
-                    DashboardScreen(
-                        userName = loggedInUserName!!,
-                        userId = loggedInUserId!!
-                    )
+            // 3. Create an updated context with the new language
+            val context = LocalContext.current
+            val updatedContext = context.createConfigurationContext(configuration)
 
-                } else {
+            // ---> NEW: CAPTURE THE ACTIVITY REGISTRY OWNER <---
+            val registryOwner = LocalActivityResultRegistryOwner.current
+            // 4. Wrap your app to provide this new language context everywhere
+            CompositionLocalProvider(
+                LocalContext provides updatedContext,
+                LocalConfiguration provides configuration,
+                LocalActivityResultRegistryOwner provides registryOwner!!
+            ){
+                val themeViewModel: ThemeViewModel = viewModel()
+                val isDark by themeViewModel.isDarkMode.collectAsState()
+                ApnaaCoachingTheme(darkTheme = isDark) {
 
-                    val authViewModel: AuthViewModel = viewModel()
+                    var loggedInUserId by remember { mutableStateOf(sessionManager.getUserId()) }
+                    var loggedInUserName by remember { mutableStateOf(sessionManager.getUserName()) }
 
-                    Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                        LoginScreen(
-                            modifier = Modifier.padding(innerPadding),
-                            viewModel = authViewModel,
-                            onGoogleSignInClick = {
-                                lifecycleScope.launch {
-                                    val idToken = triggerGoogleSignIn(this@MainActivity)
-                                    if (idToken != null) {
-                                        authViewModel.loginWithGoogleToken(idToken)
-                                    } else {
-                                        Toast.makeText(
-                                            this@MainActivity,
-                                            "Google Sign-In Cancelled/Failed",
-                                            Toast.LENGTH_SHORT
-                                        ).show()
-                                    }
-                                }
-                            },
-                            onNavigateToSignUp = {
-                                Toast.makeText(
-                                    this@MainActivity,
-                                    "Navigating to Sign Up...",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            },
-                            onLoginSuccess = {
+                    if (loggedInUserId != null && loggedInUserName != null) {
 
-                                loggedInUserId = sessionManager.getUserId()
-                                loggedInUserName = sessionManager.getUserName()
+                        DashboardScreen(
+                            userName = loggedInUserName!!,
+                            userId = loggedInUserId!!,
+                            onLogout = {
+                                // 1. Clear the data from SharedPreferences
+                                sessionManager.clearSession()
+
+                                // 2. Set states to null to instantly trigger the LoginScreen
+                                loggedInUserId = null
+                                loggedInUserName = null
                             }
                         )
+
+                    } else {
+
+                        val authViewModel: AuthViewModel = viewModel()
+
+                        Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                            LoginScreen(
+                                modifier = Modifier.padding(innerPadding),
+                                viewModel = authViewModel,
+                                onGoogleSignInClick = {
+                                    lifecycleScope.launch {
+                                        val idToken = triggerGoogleSignIn(this@MainActivity)
+                                        if (idToken != null) {
+                                            authViewModel.loginWithGoogleToken(idToken)
+                                        } else {
+                                            Toast.makeText(
+                                                this@MainActivity,
+                                                getString(R.string.google_sign_in_cancelled_failed),
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                        }
+                                    }
+                                },
+                                onNavigateToSignUp = {
+                                    Toast.makeText(
+                                        this@MainActivity,
+                                        getString(R.string.navigating_to_sign_up),
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                },
+                                onLoginSuccess = {
+
+                                    loggedInUserId = sessionManager.getUserId()
+                                    loggedInUserName = sessionManager.getUserName()
+                                }
+                            )
+                        }
                     }
                 }
             }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         }
     }
 }

@@ -43,10 +43,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.chandan.apnaacoaching.R
 import com.chandan.apnaacoaching.data.CbtTest
 import com.chandan.apnaacoaching.ui.PracticeState
 import com.chandan.apnaacoaching.ui.PracticeViewModel
@@ -90,9 +92,9 @@ fun TestListScreen(
                 is PracticeState.Success -> {
                     if (tests.isEmpty()) {
                         Text(
-                            text = "No $testType tests available right now.",
+                            text = stringResource(R.string.no_tests_available_right_now, testType),
                             modifier = Modifier.align(Alignment.Center),
-                            color = Color.Gray
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                         )
                     } else {
                         LazyColumn(
@@ -141,7 +143,7 @@ fun CbtTestCard(
     // 3. Auto-unlock the button exactly when the time arrives
     LaunchedEffect(startTimeMillis) {
         while (!isTestStarted) {
-            delay(1000L) // Check every second
+            delay(1000L.milliseconds) // Check every second
             if (System.currentTimeMillis() >= startTimeMillis) {
                 isTestStarted = true
             }
@@ -150,7 +152,7 @@ fun CbtTestCard(
 
     ElevatedCard(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.elevatedCardColors(containerColor = Color.White)
+        colors = CardDefaults.elevatedCardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
 
@@ -167,7 +169,7 @@ fun CbtTestCard(
                     )
                     Text(
                         text = test.sysName,
-                        color = Color.Gray,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                         style = MaterialTheme.typography.bodySmall
                     )
                 }
@@ -190,14 +192,14 @@ fun CbtTestCard(
                     tint = MaterialTheme.colorScheme.primary
                 )
                 Spacer(modifier = Modifier.width(4.dp))
-                Text(text = "${test.timeDuration} mins", style = MaterialTheme.typography.bodySmall)
+                Text(text = stringResource(R.string.mins_2, test.timeDuration), style = MaterialTheme.typography.bodySmall)
 
                 Spacer(modifier = Modifier.width(16.dp))
 
                 Text(
-                    text = "Marks: +${test.plusPoint} | -${test.minusPoint}",
+                    text = stringResource(R.string.marks, test.plusPoint, test.minusPoint),
                     style = MaterialTheme.typography.bodySmall,
-                    color = Color.DarkGray
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
 
@@ -214,7 +216,7 @@ fun CbtTestCard(
                         onClick = { navController.navigate("instructions/${test.id}") },
                         modifier = Modifier.weight(1f)
                     ) {
-                        Text("Reattempt")
+                        Text(stringResource(R.string.reattempt))
                     }
                     Button(
                         onClick = {
@@ -223,7 +225,7 @@ fun CbtTestCard(
                         modifier = Modifier.weight(1f),
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50))
                     ) {
-                        Text("View Result")
+                        Text(stringResource(R.string.view_result))
                     }
                 }
             } else {
@@ -239,7 +241,7 @@ fun CbtTestCard(
                             disabledContentColor = Color.Red // Red text
                         )
                     ) {
-                        Text("Test is not live Yet", fontWeight = FontWeight.Bold)
+                        Text(stringResource(R.string.test_is_not_live_yet), fontWeight = FontWeight.Bold)
                     }
                 } else {
                     // Normal active button for Enrollment or Starting the test
@@ -255,7 +257,9 @@ fun CbtTestCard(
                         },
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Text(if (test.isEnrolled) "Start Test" else "Enroll for ${test.entryFee} Coins")
+                        Text(if (test.isEnrolled) stringResource(R.string.start_test) else stringResource(
+                            R.string.enroll_for_coins, test.entryFee
+                        ))
                     }
                 }
             }
@@ -322,97 +326,3 @@ fun LiveTimeIndicator(startTimeStr: String, endTimeStr: String) {
             .padding(horizontal = 8.dp, vertical = 4.dp)
     )
 }
-
-
-//@Composable
-//fun CbtTestCard(
-//    test: CbtTest,
-//    userId: String,
-//    viewModel: PracticeViewModel,
-//    navController: NavController
-//) {
-//    val context = LocalContext.current
-////    var isLoadingResult by remember { mutableStateOf(false) }
-//
-//    ElevatedCard(
-//        modifier = Modifier.fillMaxWidth(),
-//        colors = CardDefaults.elevatedCardColors(containerColor = Color.White)
-//    ) {
-//        Column(modifier = Modifier.padding(16.dp)) {
-//            Text(
-//                text = test.heading,
-//                fontWeight = FontWeight.Bold,
-//                style = MaterialTheme.typography.titleMedium
-//            )
-//            Text(
-//                text = test.sysName,
-//                color = Color.Gray,
-//                style = MaterialTheme.typography.bodySmall
-//            )
-//
-//            Spacer(modifier = Modifier.height(12.dp))
-//
-//            Row(verticalAlignment = Alignment.CenterVertically) {
-//                Icon(
-//                    Icons.Default.Timer,
-//                    contentDescription = "Time",
-//                    modifier = Modifier.size(16.dp),
-//                    tint = MaterialTheme.colorScheme.primary
-//                )
-//                Spacer(modifier = Modifier.width(4.dp))
-//                Text(text = "${test.timeDuration} mins", style = MaterialTheme.typography.bodySmall)
-//
-//                Spacer(modifier = Modifier.width(16.dp))
-//
-//                Text(
-//                    text = "Marks: +${test.plusPoint} | -${test.minusPoint}",
-//                    style = MaterialTheme.typography.bodySmall,
-//                    color = Color.DarkGray
-//                )
-//            }
-//
-//            Spacer(modifier = Modifier.height(16.dp))
-//            HorizontalDivider()
-//            Spacer(modifier = Modifier.height(8.dp))
-//
-//            if (test.isSubmitted) {
-//                Row(
-//                    modifier = Modifier.fillMaxWidth(),
-//                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-//                ) {
-//                    OutlinedButton(
-//                        onClick = { navController.navigate("instructions/${test.id}") },
-//                        modifier = Modifier.weight(1f)
-//                    ) {
-//                        Text("Reattempt")
-//                    }
-//                    Button(
-//                        onClick = {
-//
-//                            navController.navigate("detailed_result_screen/${test.id}/$userId")
-//                        },
-//                        modifier = Modifier.weight(1f),
-//                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50))
-//                    ) {
-//                        Text("View Result")
-//                    }
-//                }
-//            } else {
-//                Button(
-//                    onClick = {
-//                        if (test.isEnrolled) {
-//                            navController.navigate("instructions/${test.id}")
-//                        } else {
-//                            viewModel.enrollInTest(userId, test.id) { message ->
-//                                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-//                            }
-//                        }
-//                    },
-//                    modifier = Modifier.fillMaxWidth()
-//                ) {
-//                    Text(if (test.isEnrolled) "Start Test" else "Enroll for ${test.entryFee} Coins")
-//                }
-//            }
-//        }
-//    }
-//}

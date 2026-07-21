@@ -18,8 +18,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.chandan.apnaacoaching.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -38,7 +40,7 @@ fun DashboardTopBar(onOpenDrawer: () -> Unit) {
                     tint = Color(0xFFD32F2F)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("ApnaaCoaching", fontWeight = FontWeight.Bold)
+                Text(stringResource(R.string.app_name), fontWeight = FontWeight.Bold)
             }
         },
         navigationIcon = {

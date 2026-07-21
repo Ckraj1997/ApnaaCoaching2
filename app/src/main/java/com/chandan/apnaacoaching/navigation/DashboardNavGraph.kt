@@ -11,6 +11,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.chandan.apnaacoaching.ui.ComingSoonScreen
+import com.chandan.apnaacoaching.ui.DashboardScreen
 import com.chandan.apnaacoaching.ui.DashboardState
 import com.chandan.apnaacoaching.ui.HomeScreen
 import com.chandan.apnaacoaching.ui.PracticeScreen
@@ -49,6 +50,10 @@ import com.chandan.apnaacoaching.ui.studymaterial.update.UpdateViewModel
 import com.chandan.apnaacoaching.ui.studymaterial.video.VideoPlayerScreen
 import com.chandan.apnaacoaching.ui.studymaterial.video.VideoScreen
 import com.chandan.apnaacoaching.ui.studymaterial.video.VideoViewModel
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.runtime.remember
+import com.chandan.apnaacoaching.ui.EditProfileScreen
+import com.chandan.apnaacoaching.utils.SessionManager
 
 @Composable
 fun DashboardNavGraph(
@@ -59,7 +64,6 @@ fun DashboardNavGraph(
     uiState: DashboardState,
     onRetry: () -> Unit
 ) {
-
     val practiceViewModel: PracticeViewModel = viewModel()
 
     val profileViewModel: ProfileViewModel = viewModel()
@@ -89,9 +93,6 @@ fun DashboardNavGraph(
         }
         composable(Screen.Content.route) {
             ComingSoonScreen(featureName = "My Content")
-        }
-        composable(Screen.Account.route) {
-            ComingSoonScreen(featureName = "User Account")
         }
         composable(Screen.Settings.route) {
             ComingSoonScreen(featureName = "Settings")
@@ -168,6 +169,13 @@ fun DashboardNavGraph(
             )
         }
 
+        composable("edit_profile") {
+            // Use the profileViewModel that was already declared at the top of DashboardNavGraph!
+            EditProfileScreen(
+                viewModel = profileViewModel,
+                navController = navController
+            )
+        }
         composable("result_screen/{testType}/{correct}/{wrong}/{skipped}/{total}") { backStackEntry ->
             val testType = backStackEntry.arguments?.getString("testType") ?: "mock"
             val correct = backStackEntry.arguments?.getString("correct")?.toInt() ?: 0
@@ -264,7 +272,7 @@ fun DashboardNavGraph(
             val levelId = backStackEntry.arguments?.getString("levelId") ?: ""
             val categoryId = backStackEntry.arguments?.getString("categoryId") ?: ""
 
-             val subjectiveViewModel: SubjectiveViewModel = viewModel()
+            val subjectiveViewModel: SubjectiveViewModel = viewModel()
             SubjectiveScreen(
                 groupId = groupId,
                 levelId = levelId,
@@ -295,7 +303,7 @@ fun DashboardNavGraph(
             val levelId = backStackEntry.arguments?.getString("levelId") ?: ""
             val categoryId = backStackEntry.arguments?.getString("categoryId") ?: ""
 
-             val videoViewModel: VideoViewModel = viewModel()
+            val videoViewModel: VideoViewModel = viewModel()
             VideoScreen(
                 groupId = groupId,
                 levelId = levelId,
@@ -310,7 +318,7 @@ fun DashboardNavGraph(
             val levelId = backStackEntry.arguments?.getString("levelId") ?: ""
             val categoryId = backStackEntry.arguments?.getString("categoryId") ?: ""
 
-             val pdfViewModel: PdfViewModel = viewModel()
+            val pdfViewModel: PdfViewModel = viewModel()
             PdfScreen(
                 groupId = groupId,
                 levelId = levelId,
@@ -325,7 +333,7 @@ fun DashboardNavGraph(
             val levelId = backStackEntry.arguments?.getString("levelId") ?: ""
             val categoryId = backStackEntry.arguments?.getString("categoryId") ?: ""
 
-             val updateViewModel: UpdateViewModel = viewModel()
+            val updateViewModel: UpdateViewModel = viewModel()
             UpdateScreen(
                 groupId = groupId,
                 levelId = levelId,
@@ -334,15 +342,6 @@ fun DashboardNavGraph(
                 navController = navController
             )
         }
-
-//        composable("video_player_screen/{encodedUrl}") { backStackEntry ->
-//            val encodedUrl = backStackEntry.arguments?.getString("encodedUrl") ?: ""
-//
-//            VideoPlayerScreen(
-//                encodedUrl = encodedUrl,
-//                navController = navController
-//            )
-//        }
 
         composable("video_player_screen/{videoId}") { backStackEntry ->
             val videoId = backStackEntry.arguments?.getString("videoId") ?: ""
@@ -367,13 +366,23 @@ fun DashboardNavGraph(
         composable("create_thread_screen/{groupId}") { backStackEntry ->
             val groupId = backStackEntry.arguments?.getString("groupId") ?: ""
             val communityViewModel: CommunityViewModel = viewModel()
-            CreateThreadScreen(groupId = groupId, userId = userId, navController = navController, viewModel = communityViewModel)
+            CreateThreadScreen(
+                groupId = groupId,
+                userId = userId,
+                navController = navController,
+                viewModel = communityViewModel
+            )
         }
 
         composable("replies_screen/{threadId}") { backStackEntry ->
             val threadId = backStackEntry.arguments?.getString("threadId") ?: ""
             val communityViewModel: CommunityViewModel = viewModel()
-            ThreadRepliesScreen(threadId = threadId, userId = userId, navController = navController, viewModel = communityViewModel)
+            ThreadRepliesScreen(
+                threadId = threadId,
+                userId = userId,
+                navController = navController,
+                viewModel = communityViewModel
+            )
         }
 
         // 1. The Entry Point (Groups Screen)

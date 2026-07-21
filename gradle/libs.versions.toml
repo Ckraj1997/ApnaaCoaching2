@@ -45,6 +45,8 @@ googleid = "1.1.0"
 youtubePlayer = "12.1.0"
 bouquet = "1.1.2"
 
+appcompat = "1.6.1"
+
 [libraries]
 androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "core-splashscreen" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -92,7 +94,7 @@ youtube-player-core = { group = "com.pierfrancescosoffritti.androidyoutubeplayer
 #android-pdf-viewer = { group = "com.github.mhiew", name = "android-pdf-viewer", version.ref = "androidPdfViewer" }
 
 bouquet-viewer = { group = "io.github.grizzi91", name = "bouquet", version.ref = "bouquet" }
-
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }

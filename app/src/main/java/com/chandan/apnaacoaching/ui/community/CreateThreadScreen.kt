@@ -2,20 +2,40 @@ package com.chandan.apnaacoaching.ui.community
 
 import android.widget.Toast
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.chandan.apnaacoaching.R
 
 @Composable
 fun CreateThreadScreen(
@@ -32,14 +52,14 @@ fun CreateThreadScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFF8F9FA))
+            .background(MaterialTheme.colorScheme.background)
     ) {
         // --- TOP BAR ---
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .shadow(elevation = 4.dp)
-                .background(Color.White)
+                .background(MaterialTheme.colorScheme.surface)
                 .height(56.dp)
                 .padding(horizontal = 4.dp),
             verticalAlignment = Alignment.CenterVertically
@@ -49,10 +69,10 @@ fun CreateThreadScreen(
             }
             Spacer(modifier = Modifier.width(8.dp))
             Text(
-                text = "Ask a Question",
+                text = stringResource(R.string.ask_a_question),
                 fontWeight = FontWeight.Bold,
                 fontSize = 20.sp,
-                color = Color.Black
+                color = MaterialTheme.colorScheme.onBackground
             )
         }
 
@@ -61,8 +81,8 @@ fun CreateThreadScreen(
             OutlinedTextField(
                 value = title,
                 onValueChange = { title = it },
-                label = { Text("Problem Title") },
-                placeholder = { Text("Enter your doubt (Keep it short)") },
+                label = { Text(stringResource(R.string.problem_title)) },
+                placeholder = { Text(stringResource(R.string.enter_your_doubt_keep_it_short)) },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true
             )
@@ -72,8 +92,8 @@ fun CreateThreadScreen(
             OutlinedTextField(
                 value = description,
                 onValueChange = { description = it },
-                label = { Text("Description") },
-                placeholder = { Text("Describe your problem in detail...") },
+                label = { Text(stringResource(R.string.description)) },
+                placeholder = { Text(stringResource(R.string.describe_your_problem_in_detail)) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f), // Takes up remaining space
@@ -90,12 +110,16 @@ fun CreateThreadScreen(
                             title = title,
                             description = description,
                             onSuccess = {
-                                Toast.makeText(context, "Question posted!", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(context,
+                                    context.getString(R.string.question_posted), Toast.LENGTH_SHORT)
+                                    .show()
                                 navController.navigateUp() // Go back to the community list
                             }
                         )
                     } else {
-                        Toast.makeText(context, "Please fill in all fields", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context,
+                            context.getString(R.string.please_fill_in_all_fields), Toast.LENGTH_SHORT)
+                            .show()
                     }
                 },
                 modifier = Modifier
@@ -104,9 +128,12 @@ fun CreateThreadScreen(
                 enabled = !isLoading
             ) {
                 if (isLoading) {
-                    CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
+                    CircularProgressIndicator(
+                        color = MaterialTheme.colorScheme.surface,
+                        modifier = Modifier.size(24.dp)
+                    )
                 } else {
-                    Text("Submit", fontSize = 16.sp)
+                    Text(stringResource(R.string.submit), fontSize = 16.sp)
                 }
             }
         }

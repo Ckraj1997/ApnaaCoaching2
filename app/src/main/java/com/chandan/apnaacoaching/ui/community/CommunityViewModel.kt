@@ -93,6 +93,7 @@ class CommunityViewModel : ViewModel() {
             }
         }
     }
+
     /**
      * Posts a new question to the server and refreshes the list on success
      */
@@ -184,9 +185,13 @@ class CommunityViewModel : ViewModel() {
         viewModelScope.launch {
             _isLoading.value = true
             try {
-                val response = CommunityApi.createReply(userId = userId, reply = replyText, threadId = threadId)
+                val response = CommunityApi.createReply(
+                    userId = userId,
+                    reply = replyText,
+                    threadId = threadId
+                )
                 if (response.isSuccessful) {
-                    fetchReplies(threadId,userId) // Refresh the list instantly
+                    fetchReplies(threadId, userId) // Refresh the list instantly
                 }
             } catch (e: Exception) {
                 e.printStackTrace()

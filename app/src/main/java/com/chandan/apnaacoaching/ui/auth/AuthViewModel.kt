@@ -3,6 +3,7 @@ package com.chandan.apnaacoaching.ui.auth
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.chandan.apnaacoaching.R
 import com.chandan.apnaacoaching.data.LoginRequest
 import com.chandan.apnaacoaching.remote.RetrofitClient
 import com.chandan.apnaacoaching.ui.auth.AuthState.Error
@@ -21,8 +22,7 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
 
     fun login(email: String, password: String) {
         if (email.isBlank() || password.isBlank()) {
-            _authState.value = Error("Email and password cannot be empty")
-            return
+            _authState.value = Error(messageId = R.string.error_empty_credentials) // Make sure to import R            return
         }
         _authState.value = AuthState.Loading
         viewModelScope.launch {
@@ -37,11 +37,9 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
 
                     _authState.value = AuthState.Success(response)
                 } else {
-                    _authState.value = Error(response.message)
-                }
+                    _authState.value = Error(apiMessage = response.message)                }
             } catch (e: Exception) {
-                _authState.value = Error("Network Error: ${e.localizedMessage}")
-            }
+                _authState.value = Error(apiMessage = "Network Error: ${e.localizedMessage}")            }
         }
     }
 
@@ -59,10 +57,10 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
 
                     _authState.value = AuthState.Success(response)
                 } else {
-                    _authState.value = Error(response.message)
+                    _authState.value = Error(apiMessage = response.message)
                 }
             } catch (e: Exception) {
-                _authState.value = Error("Network Error: ${e.localizedMessage}")
+                _authState.value = Error(apiMessage = "Network Error: ${e.localizedMessage}")
             }
         }
     }

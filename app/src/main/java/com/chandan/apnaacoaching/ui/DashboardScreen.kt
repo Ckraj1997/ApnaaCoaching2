@@ -1,5 +1,6 @@
 package com.chandan.apnaacoaching.ui
 
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -11,6 +12,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.Brightness2
 import androidx.compose.material.icons.filled.Brightness5
+import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.DrawerValue
@@ -30,16 +32,20 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.os.LocaleListCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.chandan.apnaacoaching.R
 import com.chandan.apnaacoaching.navigation.DashboardNavGraph
 import com.chandan.apnaacoaching.navigation.Screen
 import com.chandan.apnaacoaching.ui.components.DashboardBottomNav
 import com.chandan.apnaacoaching.ui.components.DashboardTopBar
+import com.chandan.apnaacoaching.ui.settings.LanguageViewModel
 import com.chandan.apnaacoaching.ui.theme.ThemeViewModel
 import kotlinx.coroutines.launch
 
@@ -48,7 +54,9 @@ fun DashboardScreen(
     userName: String,
     userId: String,
     viewModel: DashboardViewModel = viewModel(),
-    themeViewModel: ThemeViewModel = viewModel()
+    themeViewModel: ThemeViewModel = viewModel(),
+    languageViewModel : LanguageViewModel = viewModel(),
+    onLogout: () -> Unit
 ) {
 
     val navController = rememberNavController()
@@ -66,6 +74,7 @@ fun DashboardScreen(
 
 
     val isDark by themeViewModel.isDarkMode.collectAsState()
+    val isHindi by languageViewModel.isHindi.collectAsState()
 
 
     ModalNavigationDrawer(
@@ -74,7 +83,7 @@ fun DashboardScreen(
             ModalDrawerSheet(modifier = Modifier.width(280.dp)) {
                 Spacer(Modifier.height(24.dp))
                 Text(
-                    text = "ApnaaCoaching",
+                    text = stringResource(R.string.app_name),
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary,
@@ -84,7 +93,7 @@ fun DashboardScreen(
 
                 NavigationDrawerItem(
                     icon = { Icon(Icons.Default.Person, contentDescription = "Profile") },
-                    label = { Text("My Profile") },
+                    label = { Text(stringResource(R.string.my_profile)) },
                     selected = false,
                     onClick = {
                         scope.launch { drawerState.close() }
@@ -94,7 +103,7 @@ fun DashboardScreen(
                 )
                 NavigationDrawerItem(
                     icon = { Icon(Icons.Default.Settings, contentDescription = "Settings") },
-                    label = { Text("Settings") },
+                    label = { Text(stringResource(R.string.settings)) },
                     selected = false,
                     onClick = {
                         scope.launch { drawerState.close() }
@@ -104,11 +113,14 @@ fun DashboardScreen(
                 )
                 NavigationDrawerItem(
                     icon = {
-                        Icon(Icons.AutoMirrored.Filled.ExitToApp, contentDescription = "Logout")
+                        Icon(Icons.AutoMirrored.Filled.ExitToApp, contentDescription = stringResource(id = R.string.logout))
                     },
-                    label = { Text("Logout") },
+                    label = { Text(stringResource(id = R.string.logout)) },
                     selected = false,
-                    onClick = { /* TODO: Trigger Logout ViewModel */ },
+                    onClick = {
+                        scope.launch { drawerState.close() }
+                        onLogout() // <-- TRIGGER THE CALLBACK HERE
+                    },
                     modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
                 )
 
@@ -125,7 +137,9 @@ fun DashboardScreen(
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Text(text = if (isDark) "Dark Mode" else "Light Mode")
+                            Text(text = if (isDark) stringResource(R.string.dark_mode) else stringResource(
+                                R.string.light_mode
+                            ))
                             Switch(
                                 checked = isDark,
                                 onCheckedChange = { themeViewModel.toggleTheme(it) }
@@ -134,6 +148,17 @@ fun DashboardScreen(
                     },
                     selected = false,
                     onClick = { themeViewModel.toggleTheme(!isDark) }, // Toggle on click too
+                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
+                )
+
+                NavigationDrawerItem(
+                    icon = { Icon(Icons.Default.Language, contentDescription = "Language") },
+                    label = { Text("English / हिंदी") },
+                    selected = false,
+                    onClick = {
+                        // Just toggle the boolean!
+                        languageViewModel.toggleLanguage(!isHindi)
+                    },
                     modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
                 )
             }

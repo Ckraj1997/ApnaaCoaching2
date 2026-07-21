@@ -30,9 +30,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.chandan.apnaacoaching.R
 import com.chandan.apnaacoaching.data.QuestionDetail
 
 @Composable
@@ -50,14 +52,18 @@ fun SolutionsTab(details: List<QuestionDetail>?) {
             horizontalArrangement = Arrangement.End,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text("Language:", color = Color.Gray, fontSize = 14.sp)
+            Text(
+                stringResource(R.string.language),
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                fontSize = 14.sp
+            )
             Spacer(modifier = Modifier.width(8.dp))
             Switch(
                 checked = isHindi,
                 onCheckedChange = { isHindi = it }
             )
             Spacer(modifier = Modifier.width(8.dp))
-            Text(if (isHindi) "Hindi" else "English", fontWeight = FontWeight.Bold)
+            Text(if (isHindi) stringResource(R.string.hindi) else stringResource(R.string.english), fontWeight = FontWeight.Bold)
         }
 
         LazyColumn(
@@ -68,14 +74,14 @@ fun SolutionsTab(details: List<QuestionDetail>?) {
             items(details) { detail ->
                 Card(
                     modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                     elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
 
                         Text(
-                            "Question ${detail.q_no} | Status: ${detail.status}",
-                            color = Color.Gray,
+                            stringResource(R.string.question_status, detail.q_no, detail.status),
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                             fontSize = 12.sp
                         )
                         Spacer(modifier = Modifier.height(8.dp))
@@ -104,7 +110,10 @@ fun SolutionsTab(details: List<QuestionDetail>?) {
                                     Color(0xFFE3F2FD),
                                     Color(0xFF2196F3)
                                 ) // Blue (Missed correct)
-                                else -> Pair(Color.White, Color.LightGray) // Normal
+                                else -> Pair(
+                                    MaterialTheme.colorScheme.surface,
+                                    MaterialTheme.colorScheme.outlineVariant
+                                ) // Normal
                             }
 
                             Box(
@@ -117,7 +126,7 @@ fun SolutionsTab(details: List<QuestionDetail>?) {
                             ) {
                                 Text(
                                     text = if (isHindi) option.text_hi else option.text_en,
-                                    color = Color.DarkGray
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
                         }
@@ -128,11 +137,15 @@ fun SolutionsTab(details: List<QuestionDetail>?) {
                             HorizontalDivider()
                             Spacer(modifier = Modifier.height(8.dp))
                             Text(
-                                "Explanation:",
+                                stringResource(R.string.explanation),
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.primary
                             )
-                            Text(explanation, fontSize = 14.sp, color = Color.DarkGray)
+                            Text(
+                                explanation,
+                                fontSize = 14.sp,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
                         }
                     }
                 }

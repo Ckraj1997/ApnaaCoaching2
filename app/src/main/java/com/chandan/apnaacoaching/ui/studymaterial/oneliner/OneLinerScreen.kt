@@ -45,11 +45,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.chandan.apnaacoaching.R
 import com.chandan.apnaacoaching.data.OneLinerQuestion
 
 @Composable
@@ -77,7 +79,7 @@ fun OneLinerScreen(
 
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = Color(0xFFF8F9FA)
+        color = MaterialTheme.colorScheme.background
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
 
@@ -86,7 +88,7 @@ fun OneLinerScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .shadow(elevation = 4.dp)
-                    .background(Color.White)
+                    .background(MaterialTheme.colorScheme.surface)
                     .height(56.dp)
                     .padding(horizontal = 4.dp),
                 verticalAlignment = Alignment.CenterVertically
@@ -95,15 +97,15 @@ fun OneLinerScreen(
                     Icon(
                         Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "Back",
-                        tint = Color.Black
+                        tint = MaterialTheme.colorScheme.onBackground
                     )
                 }
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "One Liners",
+                    text = stringResource(R.string.one_liners),
                     fontWeight = FontWeight.Bold,
                     fontSize = 20.sp,
-                    color = Color.Black,
+                    color = MaterialTheme.colorScheme.onBackground,
                     modifier = Modifier.weight(1f)
                 )
 
@@ -120,9 +122,11 @@ fun OneLinerScreen(
             }
 
             // --- MAIN LIST AREA ---
-            Box(modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f)) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+            ) {
                 when (val state = uiState) {
                     is OneLinerUiState.Loading -> {
                         CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
@@ -139,8 +143,8 @@ fun OneLinerScreen(
                     is OneLinerUiState.Success -> {
                         if (state.questions.isEmpty()) {
                             Text(
-                                "No questions found.",
-                                color = Color.Gray,
+                                stringResource(R.string.no_questions_found),
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                                 modifier = Modifier.align(Alignment.Center)
                             )
                         } else {
@@ -167,7 +171,7 @@ fun OneLinerScreen(
             }
 
             // --- BOTTOM PAGINATION PALETTE ---
-            Surface(shadowElevation = 8.dp, color = Color.White) {
+            Surface(shadowElevation = 8.dp, color = MaterialTheme.colorScheme.surface) {
                 LazyRow(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -202,7 +206,7 @@ fun OneLinerScreen(
                         ) {
                             Text(
                                 text = pageNum.toString(),
-                                color = if (isCurrent) Color.White else Color.Black,
+                                color = if (isCurrent) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.onBackground,
                                 fontWeight = FontWeight.Bold
                             )
                         }
@@ -224,21 +228,23 @@ fun OneLinerCard(
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         shape = RoundedCornerShape(12.dp)
     ) {
-        Column(modifier = Modifier
-            .padding(16.dp)
-            .fillMaxWidth()) {
+        Column(
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth()
+        ) {
 
             // Question Text
             val qText = if (isHindi) question.question_name_Hi else question.question
             Text(
-                text = "Q. ${qText ?: ""}",
+                text = stringResource(R.string.q, qText ?: ""),
                 fontWeight = FontWeight.Bold,
                 fontSize = 16.sp,
-                color = Color.Black
+                color = MaterialTheme.colorScheme.onBackground
             )
 
             // Question Image
@@ -275,7 +281,9 @@ fun OneLinerCard(
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = if (isRevealed) "Hide Answer" else "Show Answer",
+                    text = if (isRevealed) stringResource(R.string.hide_answer) else stringResource(
+                        R.string.show_answer
+                    ),
                     color = MaterialTheme.colorScheme.primary,
                     fontWeight = FontWeight.Bold,
                     fontSize = 14.sp
@@ -292,7 +300,7 @@ fun OneLinerCard(
 
                 val aText = if (isHindi) correctOpt.option_txt_hi else correctOpt.option_txt
                 Text(
-                    text = "Ans: ${aText ?: ""}",
+                    text = stringResource(R.string.ans, aText ?: ""),
                     fontWeight = FontWeight.Bold,
                     color = Color(0xFF4CAF50), // Green for correct answer
                     fontSize = 15.sp
@@ -316,9 +324,9 @@ fun OneLinerCard(
                 if (!descText.isNullOrEmpty()) {
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = "Explanation: $descText",
+                        text = stringResource(R.string.explanations, descText),
                         fontSize = 13.sp,
-                        color = Color.DarkGray
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
 
