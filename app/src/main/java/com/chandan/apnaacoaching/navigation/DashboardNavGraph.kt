@@ -53,6 +53,8 @@ import com.chandan.apnaacoaching.ui.studymaterial.video.VideoViewModel
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.runtime.remember
 import com.chandan.apnaacoaching.ui.EditProfileScreen
+import com.chandan.apnaacoaching.ui.SearchScreen
+import com.chandan.apnaacoaching.ui.SearchViewModel
 import com.chandan.apnaacoaching.utils.SessionManager
 
 @Composable
@@ -417,6 +419,14 @@ fun DashboardNavGraph(
                 userId = userId,
                 navController = navController,
                 viewModel = communityViewModel
+            )
+        }
+
+        composable("search_screen") {
+            val searchViewModel: SearchViewModel = viewModel()
+            SearchScreen(
+                viewModel = searchViewModel,
+                navController = navController
             )
         }
     }

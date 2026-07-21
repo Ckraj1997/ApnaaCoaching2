@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.os.LocaleListCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.chandan.apnaacoaching.R
@@ -56,7 +57,8 @@ fun DashboardScreen(
     viewModel: DashboardViewModel = viewModel(),
     themeViewModel: ThemeViewModel = viewModel(),
     languageViewModel : LanguageViewModel = viewModel(),
-    onLogout: () -> Unit
+    onLogout: () -> Unit,
+//    navController: NavController
 ) {
 
     val navController = rememberNavController()
@@ -166,7 +168,7 @@ fun DashboardScreen(
     ) {
         Scaffold(
             topBar = {
-                DashboardTopBar(onOpenDrawer = { scope.launch { drawerState.open() } })
+                DashboardTopBar(onOpenDrawer = { scope.launch { drawerState.open() } },navController)
             },
             bottomBar = {
                 if (!hideBottomBar) {

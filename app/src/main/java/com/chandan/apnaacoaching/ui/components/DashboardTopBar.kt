@@ -21,11 +21,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.chandan.apnaacoaching.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DashboardTopBar(onOpenDrawer: () -> Unit) {
+fun DashboardTopBar(onOpenDrawer: () -> Unit,navController: NavController) {
     TopAppBar(
         title = {
             Row(
@@ -50,7 +51,7 @@ fun DashboardTopBar(onOpenDrawer: () -> Unit) {
             }
         },
         actions = {
-            IconButton(onClick = { }) {
+            IconButton(onClick = { navController.navigate("search_screen") }) {
                 Icon(Icons.Default.Search, contentDescription = "Search")
             }
         }
