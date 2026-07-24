@@ -55,6 +55,12 @@ import androidx.compose.runtime.remember
 import com.chandan.apnaacoaching.ui.EditProfileScreen
 import com.chandan.apnaacoaching.ui.SearchScreen
 import com.chandan.apnaacoaching.ui.SearchViewModel
+import com.chandan.apnaacoaching.ui.kbc.KbcScreen
+import com.chandan.apnaacoaching.ui.kbc.KbcViewModel
+import com.chandan.apnaacoaching.ui.studymaterial.quiz.QuizPlayerScreen
+import com.chandan.apnaacoaching.ui.studymaterial.quiz.QuizPlayerViewModel
+import com.chandan.apnaacoaching.ui.studymaterial.quiz.StudyQuizSolutionScreen
+import com.chandan.apnaacoaching.ui.studymaterial.quiz.StudyQuizSolutionViewModel
 import com.chandan.apnaacoaching.utils.SessionManager
 
 @Composable
@@ -426,6 +432,43 @@ fun DashboardNavGraph(
             val searchViewModel: SearchViewModel = viewModel()
             SearchScreen(
                 viewModel = searchViewModel,
+                navController = navController
+            )
+        }
+
+        composable("quiz_player_screen/{quizId}") { backStackEntry ->
+            val quizId = backStackEntry.arguments?.getString("quizId") ?: "0"
+
+            // We will create this ViewModel and Screen in Step 2 & 3
+            val quizPlayerViewModel: QuizPlayerViewModel = viewModel()
+
+            QuizPlayerScreen(
+                quizId = quizId,
+                viewModel = quizPlayerViewModel,
+                navController = navController,
+                userId = userId
+            )
+        }
+
+        composable("study_quiz_solution_screen/{quizId}/{userId}") { backStackEntry ->
+            val quizId = backStackEntry.arguments?.getString("quizId") ?: "0"
+            val passedUserId = backStackEntry.arguments?.getString("userId") ?: userId
+
+            val solutionViewModel: StudyQuizSolutionViewModel = viewModel()
+
+            StudyQuizSolutionScreen(
+                quizId = quizId,
+                userId = passedUserId,
+                viewModel = solutionViewModel,
+                navController = navController
+            )
+        }
+
+        composable("kbc_screen") {
+            val kbcViewModel: KbcViewModel = viewModel()
+
+            KbcScreen(
+                viewModel = kbcViewModel,
                 navController = navController
             )
         }

@@ -4,6 +4,7 @@ import com.chandan.apnaacoaching.data.CbtQuestion
 import com.chandan.apnaacoaching.data.CbtResponse
 import com.chandan.apnaacoaching.data.EnrollResponse
 import com.chandan.apnaacoaching.data.FullResultResponse
+import com.chandan.apnaacoaching.data.KbcSessionResponse
 import com.chandan.apnaacoaching.data.QuizSubmission
 import com.chandan.apnaacoaching.data.ResultResponse
 import okhttp3.ResponseBody
@@ -43,4 +44,8 @@ interface PracticeApiService {
         @Query("quiz_id") quizId: Int,
         @Query("user_id") userId: String
     ): FullResultResponse
+
+    // Add the endpoint
+    @GET("get_kbc_session.php")
+    suspend fun startKbcSession(): KbcSessionResponse
 }

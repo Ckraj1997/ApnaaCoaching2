@@ -83,7 +83,7 @@ fun PracticeScreen(
             icon = Icons.Default.Star,
             containerColor = Color(0xFFFFF3E0), // Light Orange
             iconColor = Color(0xFFF57C00),
-            onClick = { /* TODO: Route to KBC Game */ }
+            onClick = { navController.navigate("kbc_screen") }
         )
     }
 }

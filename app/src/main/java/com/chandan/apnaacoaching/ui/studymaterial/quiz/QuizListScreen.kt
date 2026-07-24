@@ -202,7 +202,7 @@ fun StaticQuizCard(
                     Button(
                         onClick = {
                             // Assuming you have a detailed result screen similar to CBT
-                            navController.navigate("detailed_result_screen/${quiz.quiz_id}/$userId")
+                            navController.navigate("study_quiz_solution_screen/${quiz.quiz_id}/${userId}")
                         },
                         modifier = Modifier.weight(1f),
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50))

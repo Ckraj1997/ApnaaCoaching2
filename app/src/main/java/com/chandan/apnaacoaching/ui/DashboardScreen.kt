@@ -72,7 +72,7 @@ fun DashboardScreen(
 
     val hideBottomBar = currentRoute?.startsWith("instructions") == true ||
             currentRoute?.startsWith("quiz_screen") == true ||
-            currentRoute?.startsWith("result_screen") == true
+            currentRoute?.startsWith("result_screen") == true || currentRoute?.startsWith("kbc_screen") == true
 
 
     val isDark by themeViewModel.isDarkMode.collectAsState()
